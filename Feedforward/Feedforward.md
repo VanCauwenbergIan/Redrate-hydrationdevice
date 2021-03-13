@@ -1,12 +1,12 @@
 # Projectgegevens
 
-**Ian Van Cauwenberg:** Plaats hier jouw voornaam & naam.
+**Ian Van Cauwenberg:**
 
-**Sparringpartner:** schrijf hier de naam van jouw sparring partner. Deze persoon is jouw klankbord, redder in nood, motivator, partner in crime :-)
+**Sparringpartner: Maxime Ryheul**
 
-**Projectsamenvatting in max 10 woorden:** schrijf hier jouw samenvatting
+**Track je waterconsumptie en krijg feedback**
 
-**Projecttitel:** plaats hier een catchy werktitel van jouw project
+**Redrate:**
 
 # Tips voor feedbackgesprekken
 
@@ -32,14 +32,16 @@
 
 # Feedforward gesprekken
 
-## Gesprek 1 (Datum: dd/mm/yyyy)
+## Gesprek 1 (Datum: 16/03/2021)
 
-Lector:
+Lector: Geert & Frederik
 
 Vragen voor dit gesprek:
 
-- [x] vraag 1:
-- [ ] vraag 2:
+- [ ] vraag 1: Wat zou jezelf aanpassen? (bvb. een ander type sensoren)
+- [ ] vraag 2: Ik dacht erover om ook een mini-luidspreker toe te voegen, is het beter om deze te plaatsen onder nice-to haves (eerst focussen op led strip)?
+- [ ] vraag 3: Ik zou graag het 'platform' zelf zo compact mogelijk houden (met sowieso de display en gewichtsensor erop), hoe zou ik dat best aanpakken?
+- [ ] vraag 4: Zou het beter zijn om ook gebruik te maken van een arduino of esp32 idpv enkel een rasp?
 
 Dit is de feedback op mijn vragen.
 
@@ -57,7 +59,7 @@ Lector:
 
 Vragen voor dit gesprek:
 
-- [x] vraag 1:
+- [ ] vraag 1:
 - [ ] vraag 2:
 
 Dit is de feedback op mijn vragen.
