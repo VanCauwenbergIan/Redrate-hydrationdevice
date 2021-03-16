@@ -38,20 +38,22 @@ Lector: Geert & Frederik
 
 Vragen voor dit gesprek:
 
-- [ ] vraag 1: Wat zou jezelf aanpassen? (bvb. een ander type sensoren)
-- [ ] vraag 2: Ik dacht erover om ook een mini-luidspreker toe te voegen, is het beter om deze te plaatsen onder nice-to haves (eerst focussen op led strip)?
-- [ ] vraag 3: Ik zou graag het 'platform' zelf zo compact mogelijk houden (met sowieso de display en gewichtsensor erop), hoe zou ik dat best aanpakken?
+- [X] vraag 1: Wat zou jezelf aanpassen? (bvb. een ander type sensoren)
+- [X] vraag 2: Is het project haalbaar volgens u?
+- [X] vraag 3: Ik dacht erover om ook een mini-luidspreker toe te voegen, is het beter om deze te plaatsen onder nice-to haves (eerst focussen op led strip)?
 - [ ] vraag 4: Zou het beter zijn om ook gebruik te maken van een arduino of esp32 idpv enkel een rasp?
 
 Dit is de feedback op mijn vragen.
 
-- feedback 1
-- feedback 2
+- feedback
+Voor een gewoon geluidje af te spelen zou een luidspreker geen probleem mogen zijn. Gebruik het veschil in gewicht om ook te bepalen of er een nieuwe fles is opgeplaatst. Ik zou enkel een knop gebruiken om een neiuwe fles zwaardere of lichtere fles aan te geven. 
 
 Hier komt de feedforward: wat ga ik concreet doen?
 
 - [ ] ToDo 1
+    nadenken over hoe ik de code ga aanpakken, nadenken over het ontwerp
 - [ ] ToDo 2
+    blokschema aanpassen (display en knop)
 
 ## Gesprek 2 (Datum: dd/mm/yyyy)
 
