@@ -71,7 +71,7 @@ def init_lcd():
         new_list.append(ip)
         print(ip)
     lcd.clear_screen()
-    lcd.write_message(f"{new_list[0]}")
+    lcd.write_message(f"{new_list[1]}")
 
 
 # app en socket routes
