@@ -24,6 +24,37 @@ VERTICAAL: bvb. o-section o-section--xl */
 /*------------------------------------*\
   #FONTS
 \*------------------------------------*/
+/* regular */
+@font-face {
+  font-family: 'Inter Web';
+  font-weight: 400;
+  src: url('../fonts/Inter-Regular.woff2') format('woff2');
+  src: url('../fonts/Inter-Regular.woff') format('woff');
+}
+
+/* medium */
+@font-face {
+  font-family: 'Inter Web';
+  font-weight: 500;
+  src: url('../fonts/Inter-Medium.woff2') format('woff2');
+  src: url('../fonts/Inter-Medium.woff') format('woff');
+}
+
+/* semi-bold */
+@font-face {
+  font-family: 'Inter Web';
+  font-weight: 600;
+  src: url('../fonts/Inter-SemiBold.woff2') format('woff2');
+  src: url('../fonts/Inter-SemiBold.woff') format('woff');
+}
+
+/* bold */
+@font-face {
+  font-family: 'Inter Web';
+  font-weight: 700;
+  src: url('../fonts/Inter-Bold.woff2') format('woff2');
+  src: url('../fonts/Inter-Bold.woff') format('woff');
+}
 
 /*------------------------------------*\
   #GENERIC
@@ -37,9 +68,9 @@ VERTICAAL: bvb. o-section o-section--xl */
 
 html {
   font-size: 16px;
-  line-height: 1.5;
-  font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
-  color: #111;
+  line-height: 20px;
+  font-family: 'Inter Web', Helvetica, arial, sans-serif;
+  color: #16181a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
@@ -59,8 +90,8 @@ html {
 */
 
 ::selection {
-  background: #e85e00;
-  color: white;
+  background: #45494d;
+  color: #45494d;
   text-shadow: none;
 }
 
@@ -159,18 +190,18 @@ hr {
 }
 
 a {
-  color: RoyalBlue;
+  color: #45494d;
   transition: all 0.1s ease-in-out;
 }
 
 a:visited,
 a:active {
-  color: BlueViolet;
+  color: #2f7cad;
 }
 
 a:hover,
 a:focus {
-  color: Crimson;
+  color: #2f7cad;
 }
 
 /*------------------------------------*\
@@ -184,7 +215,7 @@ a:focus {
 */
 
 .o-row {
-  padding: 24px 24px 0;
+  padding: 24px 16px 0;
   display: flow-root;
 }
 
@@ -201,11 +232,6 @@ a:focus {
 }
 
 @media (min-width: 768px) {
-  .o-row {
-    padding-left: 48px;
-    padding-right: 48px;
-  }
-
   .o-row--md {
     padding-top: 48px;
     padding-bottom: 24px;
@@ -224,6 +250,10 @@ a:focus {
   }
 }
 
+.o-row--background__dark {
+  background-color: #0e3e9d;
+}
+
 /*
   Objects: Container
   ---
@@ -234,7 +264,7 @@ a:focus {
   margin-left: auto;
   margin-right: auto;
   width: 100%;
-  max-width: 90em; /* 90 * 16px = 1440px */
+  max-width: 25em; /* 22.5 * 16px = 360px */
 }
 
 /*
@@ -430,6 +460,93 @@ a:focus {
   ---
   Component description
 */
+
+.c-main {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-height: 100vh;
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  /* padding: 4rem; */
+  box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* navigation bar */
+
+.c-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 8px 8px 8px;
+}
+
+.c-nav__item {
+  padding: 0 8px;
+  text-align: center;
+}
+
+/* boxes detail screen */
+
+.c-details {
+  border-radius: 10px;
+  background-color: #fff;
+  margin-bottom: 24px;
+}
+
+.c-details__summary {
+  padding: 8px 8px 24px 16px;
+}
+
+.c-details__today {
+  padding: 8px 16px 24px 16px;
+}
+
+/* list of data detail screen */
+.c-list {
+  margin: 0;
+}
+
+.c-list__item {
+  display: flex;
+  justify-content: space-between;
+  color: #45494d;
+  padding-left: 8px;
+}
+
+.c-list__subitem {
+  display: flex;
+  justify-content: space-between;
+  color: #52616b;
+  font-size: 14px;
+  padding-left: 16px;
+}
+
+.c-list__data {
+  font-size: 14px;
+  color: #2f7cad;
+}
+
+.c-list__data--center {
+  width: 100%;
+  text-align: center;
+}
+
+li.c-list__item + li.c-list__subitem {
+  margin-top: 16px;
+}
+
+li.c-list__item + li.c-list__item,
+li.c-list__subitem + li.c-list__item {
+  margin-top: 24px;
+}
+
+/* grafiek */
+.percentage {
+}
 
 /*------------------------------------*\
 #UTILITIES
@@ -696,6 +813,17 @@ a:focus {
   .u-5-of-6-bp4 {
     flex-basis: calc(100% / 6 * 5) !important;
   }
+}
+
+.u-space-center-center {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.u-background--dark {
+  background-color: #0e3e9d;
 }
 
 /*------------------------------------*\

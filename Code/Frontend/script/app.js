@@ -44,11 +44,11 @@ const listenToSocket = function(){
 // functies voor socket listeners
 
 const updateTemperatuur = function(temperatuur){
-    htmlTemperatuur.innerHTML = `Temperature: ${temperatuur}°C`;
+    htmlTemperatuur.innerHTML = `${temperatuur}°C`;
 }
 
 const updateVochtigheid = function(vochtigheid){
-    htmlVochtigheid.innerHTML = `Relative Humidity: ${vochtigheid}%`
+    htmlVochtigheid.innerHTML = `${vochtigheid}%`
 }
 
 const init = function () {

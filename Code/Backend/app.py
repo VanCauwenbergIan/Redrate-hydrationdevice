@@ -22,6 +22,18 @@ GPIO.setmode(GPIO.BCM)
 hih = 0
 vorige_temperatuur = 0
 vorige_vochtigheid = 0
+periode = 10
+
+rood = 26
+groen = 19
+blauw = 13
+
+GPIO.setup(rood, GPIO.OUT)
+GPIO.setup(blauw, GPIO.OUT)
+GPIO.setup(groen, GPIO.OUT)
+pwm_rood = GPIO.PWM(rood, 800000)
+pwm_blauw = GPIO.PWM(blauw, 800000)
+pwm_groen = GPIO.PWM(groen, 800000)
 
 
 def temperatuur_inlezen():
@@ -71,7 +83,23 @@ def init_lcd():
         new_list.append(ip)
         print(ip)
     lcd.clear_screen()
-    lcd.write_message(f"{new_list[1]}")
+    if len(new_list) > 1:
+        lcd.write_message(f"{new_list[1]}")
+    else:
+        lcd.write_message(f"{new_list[0]}")
+
+
+def led():
+    pwm_rood.start(25)
+    pwm_blauw.start(25)
+    pwm_groen.start(25)
+
+
+def led_notification():
+    pwm_rood.start(25)
+    pwm_blauw.start(0)
+    pwm_groen.start(0)
+    time.sleep(1)
 
 
 # app en socket routes
@@ -142,11 +170,14 @@ def main_code():
     while True:
         vochtigheid_inlezen()
         temperatuur_inlezen()
+        led()
         time.sleep(1)
 
 
 thread = threading.Timer(1, main_code)
 thread.start()
+
+# led strip interfering with hih :(
 
 # Debugging moet uit staan voor threading
 if __name__ == '__main__':
