@@ -94,6 +94,7 @@ def init_lcd():
 
 
 def led():
+    pass
     pwm_rood.ChangeDutyCycle(25)
     pwm_blauw.ChangeDutyCycle(25)
     pwm_groen.ChangeDutyCycle(25)
@@ -172,16 +173,16 @@ def add_log(msg):
 def main_code():
     init_lcd()
     while True:
+        led()
         vochtigheid_inlezen()
         temperatuur_inlezen()
-        led()
         time.sleep(1)
 
 
 thread = threading.Timer(1, main_code)
 thread.start()
 
-# led strip interfering with hih :(
+# led strip interfering with lcd :(
 
 # Debugging moet uit staan voor threading
 if __name__ == '__main__':

@@ -25,11 +25,12 @@
         <header class="c-header">
           <div class="c-nav">
               <span class="c-nav__item c-nav__button-left">
-                <svg id="Return_button" data-name="Return button" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <path id="Path_107" data-name="Path 107" d="M0,0H24V24H0Z" fill="none"/>
-                  <path id="Path_108" data-name="Path 108" d="M20,11H7.83l5.59-5.59L12,4,4,12l8,8,1.41-1.41L7.83,13H20Z" fill="#fff"/>
-                </svg>
-                  
+                <a href="/index.html">
+                  <svg id="Return_button" data-name="Return button" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path id="Path_107" data-name="Path 107" d="M0,0H24V24H0Z" fill="none"/>
+                    <path id="Path_108" data-name="Path 108" d="M20,11H7.83l5.59-5.59L12,4,4,12l8,8,1.41-1.41L7.83,13H20Z" fill="#fff"/>
+                  </svg>
+                </a>
               </span>
               <span class="c-nav__item c-nav__logo">
                   <svg xmlns="http://www.w3.org/2000/svg" width="84" height="26" viewBox="0 0 84 26">
@@ -47,12 +48,12 @@
       <section class="o-row">
         <div class="o-container">
           <div class="c-details c-details__summary">
-            <h2>
+            <h2 class="c-lead c-lead--md-bold">
               Weekly Summary
             </h2>
             <div class="o-section">
               <div class="c-chart o-layout o-la">
-                <div class="o-layout__item u-16-of-296">
+                <div class="o-layout__item u-graf1">
                   <ul class="o-list c-ticks">
                     <li class="c-tick">2,0l</li>
                     <li class="c-tick">1,5l</li>
@@ -61,7 +62,7 @@
                     <li class="c-tick">0,0l</li>
                   </ul>
                 </div>
-                <div class="o-layout__item u-280-of-296">
+                <div class="o-layout__item u-graf2">
                   <table class="stat-table-vert">
                     <tr>
                         <td>
@@ -108,41 +109,35 @@
             </div>
 
             <ul class="o-list c-list">
-              <li class="c-list__item">
+              <li class="c-list__item c-lead c-lead--md">
                 Total: <span class="c-list__data c-list__data--center js-waterweek">... l</span>
               </li>
-              <li class="c-list__subitem">
+              <li class="c-list__subitem c-lead c-lead--sm">
                 Average: <span class="c-list__data c-list__data--center js-average">... l / day</span>
               </li>
-              <li class="c-list__item">
+              <li class="c-list__item c-lead c-lead--md">
                   <span class="js-conclussion">no data</span>
               </li>
             </ul>
           </div>
           <div class="c-details c-details__today">
-            <h2>
+            <h2 class="c-lead c-lead--md-bold">
               Today
             </h2>
             <ul class="o-list c-list">
-              <li class="c-list__item">
-                Temperature: <span class="c-list__data js-temperature"></span>
+              <li class="c-list__item c-lead c-lead--md">
+                Temperature: <span class="c-list__data js-temperature">...°C</span>
               </li>
-              <li class="c-list__subitem">
-                Relative humidity: <span class="c-list__data js-rhumidity"></span>
+              <li class="c-list__subitem c-lead c-lead--sm">
+                Relative humidity: <span class="c-list__data js-rhumidity">...%</span>
               </li>
-              <li class="c-list__item">
+              <li class="c-list__item c-lead c-lead--md">
                   Water drunk: <span class="c-list__data js-waterdrunk">... l / min 1,5l</span>
               </li>
             </ul>
           </div>
         </div>
       </section>
-          <!-- <div class="o-container">
-            <div class="c-data__today">
-              <h2 class="c-temperature js-temperature"> Temperature: loading...</h2>
-              <h2 class="c-rhumidity js-rhumidity"> Relative humidity: loading...</h2>
-            </div>
-          </div> -->
       </main>
     </body>
 </html>
