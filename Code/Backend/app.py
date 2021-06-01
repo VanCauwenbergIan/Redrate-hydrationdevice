@@ -31,9 +31,13 @@ blauw = 13
 GPIO.setup(rood, GPIO.OUT)
 GPIO.setup(blauw, GPIO.OUT)
 GPIO.setup(groen, GPIO.OUT)
-pwm_rood = GPIO.PWM(rood, 800000)
-pwm_blauw = GPIO.PWM(blauw, 800000)
-pwm_groen = GPIO.PWM(groen, 800000)
+pwm_rood = GPIO.PWM(rood, 100)
+pwm_blauw = GPIO.PWM(blauw, 100)
+pwm_groen = GPIO.PWM(groen, 100)
+
+pwm_rood.start(0)
+pwm_blauw.start(0)
+pwm_groen.start(0)
 
 
 def temperatuur_inlezen():
@@ -90,9 +94,9 @@ def init_lcd():
 
 
 def led():
-    pwm_rood.start(25)
-    pwm_blauw.start(25)
-    pwm_groen.start(25)
+    pwm_rood.ChangeDutyCycle(25)
+    pwm_blauw.ChangeDutyCycle(25)
+    pwm_groen.ChangeDutyCycle(25)
 
 
 def led_notification():
