@@ -28,17 +28,19 @@ const getHum = function(){
 // socket listeners
 
 const listenToSocket = function(){
-    socket.on("B2F_addlog", function (jsonObject){
-        console.log(`boodschap server: aangepaste waarde of status`);
-        if (jsonObject.deviceid == 4){
-            console.log(`Nieuwe temperatuur: ${jsonObject.gemetenwaarde}°C`);
-            updateTemperatuur(jsonObject.gemetenwaarde);
-        }
-        else if (jsonObject.deviceid == 3){
-            console.log(`Nieuwe relatieve luchtvochtigheid: ${jsonObject.gemetenwaarde}%`);
-            updateVochtigheid(jsonObject.gemetenwaarde);
-        }
-    })
+    if (htmlTemperatuur){
+        socket.on("B2F_addlog", function (jsonObject){
+            console.log(`boodschap server: aangepaste waarde of status`);
+            if (jsonObject.deviceid == 4){
+                console.log(`Nieuwe temperatuur: ${jsonObject.gemetenwaarde}°C`);
+                updateTemperatuur(jsonObject.gemetenwaarde);
+            }
+            else if (jsonObject.deviceid == 3){
+                console.log(`Nieuwe relatieve luchtvochtigheid: ${jsonObject.gemetenwaarde}%`);
+                updateVochtigheid(jsonObject.gemetenwaarde);
+            }
+        })
+    }
 }
 
 // functies voor socket listeners
@@ -56,8 +58,10 @@ const init = function () {
     htmlTemperatuur = document.querySelector('.js-temperature');
     htmlVochtigheid = document.querySelector('.js-rhumidity')
 
-    getTemp();
-    getHum();
+    if (htmlTemperatuur){
+        getTemp();
+        getHum();
+    }
 
     listenToSocket();
 }
