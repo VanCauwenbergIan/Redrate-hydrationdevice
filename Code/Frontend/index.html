@@ -22,9 +22,9 @@
     </head>
     <body class="u-space-center-center">
         <main class="c-main">
-            <header class="c-header u-bring-to-front">
+            <header class="c-header u-bring-to-front--exxtra">
                 <div class="c-nav">
-                    <span class="c-nav__item c-nav__button-left">
+                    <span class="c-nav__item c-nav__button-left" style="opacity: 0;">
                       <svg id="Return_button" data-name="Return button" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                         <path id="Path_107" data-name="Path 107" d="M0,0H24V24H0Z" fill="none"/>
                         <path id="Path_108" data-name="Path 108" d="M20,11H7.83l5.59-5.59L12,4,4,12l8,8,1.41-1.41L7.83,13H20Z" fill="#fff"/>
@@ -37,15 +37,36 @@
                         </svg>
                     </span>
                     <span class="c-nav__item c-nav__button-right">
-                        <a href="/">
-                            <svg id="settings_black_24dp" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                                <path id="Path_111" data-name="Path 111" d="M0,0H24V24H0Z" fill="none"/>
-                                <path id="Path_112" data-name="Path 112" d="M19.43,12.98A7.793,7.793,0,0,0,19.5,12a7.793,7.793,0,0,0-.07-.98l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.44-.25.467.467,0,0,0-.17.03l-2.49,1a7.306,7.306,0,0,0-1.69-.98l-.38-2.65A.488.488,0,0,0,14,2H10a.488.488,0,0,0-.49.42L9.13,5.07a7.683,7.683,0,0,0-1.69.98l-2.49-1a.566.566,0,0,0-.18-.03.5.5,0,0,0-.43.25l-2,3.46a.493.493,0,0,0,.12.64l2.11,1.65A7.931,7.931,0,0,0,4.5,12a7.931,7.931,0,0,0,.07.98L2.46,14.63a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.44.25.467.467,0,0,0,.17-.03l2.49-1a7.306,7.306,0,0,0,1.69.98l.38,2.65A.488.488,0,0,0,10,22h4a.488.488,0,0,0,.49-.42l.38-2.65a7.683,7.683,0,0,0,1.69-.98l2.49,1a.566.566,0,0,0,.18.03.5.5,0,0,0,.43-.25l2-3.46a.5.5,0,0,0-.12-.64Zm-1.98-1.71a5.343,5.343,0,0,1,.05.73c0,.21-.02.43-.05.73l-.14,1.13.89.7,1.08.84-.7,1.21-1.27-.51-1.04-.42-.9.68a5.857,5.857,0,0,1-1.25.73l-1.06.43-.16,1.13L12.7,20H11.3l-.19-1.35-.16-1.13-1.06-.43a5.674,5.674,0,0,1-1.23-.71l-.91-.7-1.06.43-1.27.51-.7-1.21,1.08-.84.89-.7-.14-1.13c-.03-.31-.05-.54-.05-.74s.02-.43.05-.73l.14-1.13-.89-.7L4.72,8.6l.7-1.21,1.27.51,1.04.42.9-.68a5.857,5.857,0,0,1,1.25-.73l1.06-.43.16-1.13L11.3,4h1.39l.19,1.35.16,1.13,1.06.43a5.674,5.674,0,0,1,1.23.71l.91.7,1.06-.43,1.27-.51.7,1.21-1.07.85-.89.7.14,1.13ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2.006,2.006,0,0,1,12,14Z" fill="#45494d"/>
-                            </svg>  
-                        </a>                        
+                        <svg id="settings_black_24dp" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                            <path id="Path_111" data-name="Path 111" d="M0,0H24V24H0Z" fill="none"/>
+                            <path id="Path_112" data-name="Path 112" d="M19.43,12.98A7.793,7.793,0,0,0,19.5,12a7.793,7.793,0,0,0-.07-.98l2.11-1.65a.5.5,0,0,0,.12-.64l-2-3.46a.5.5,0,0,0-.44-.25.467.467,0,0,0-.17.03l-2.49,1a7.306,7.306,0,0,0-1.69-.98l-.38-2.65A.488.488,0,0,0,14,2H10a.488.488,0,0,0-.49.42L9.13,5.07a7.683,7.683,0,0,0-1.69.98l-2.49-1a.566.566,0,0,0-.18-.03.5.5,0,0,0-.43.25l-2,3.46a.493.493,0,0,0,.12.64l2.11,1.65A7.931,7.931,0,0,0,4.5,12a7.931,7.931,0,0,0,.07.98L2.46,14.63a.5.5,0,0,0-.12.64l2,3.46a.5.5,0,0,0,.44.25.467.467,0,0,0,.17-.03l2.49-1a7.306,7.306,0,0,0,1.69.98l.38,2.65A.488.488,0,0,0,10,22h4a.488.488,0,0,0,.49-.42l.38-2.65a7.683,7.683,0,0,0,1.69-.98l2.49,1a.566.566,0,0,0,.18.03.5.5,0,0,0,.43-.25l2-3.46a.5.5,0,0,0-.12-.64Zm-1.98-1.71a5.343,5.343,0,0,1,.05.73c0,.21-.02.43-.05.73l-.14,1.13.89.7,1.08.84-.7,1.21-1.27-.51-1.04-.42-.9.68a5.857,5.857,0,0,1-1.25.73l-1.06.43-.16,1.13L12.7,20H11.3l-.19-1.35-.16-1.13-1.06-.43a5.674,5.674,0,0,1-1.23-.71l-.91-.7-1.06.43-1.27.51-.7-1.21,1.08-.84.89-.7-.14-1.13c-.03-.31-.05-.54-.05-.74s.02-.43.05-.73l.14-1.13-.89-.7L4.72,8.6l.7-1.21,1.27.51,1.04.42.9-.68a5.857,5.857,0,0,1,1.25-.73l1.06-.43.16-1.13L11.3,4h1.39l.19,1.35.16,1.13,1.06.43a5.674,5.674,0,0,1,1.23.71l.91.7,1.06-.43,1.27-.51.7,1.21-1.07.85-.89.7.14,1.13ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2.006,2.006,0,0,1,12,14Z" fill="#45494d"/>
+                        </svg>                         
                     </span>
                 </div>
             </header>
+            <div class="c-warning u-bring-to-front--extra u-display-none">
+                <p class="js-warning">Looks like it's hot today! Make sure to drink more water! Do you want to be reminded more often?</p>
+                <div class="c-buttons o-layout o-layout--align-content-space-between">
+                    <div class="o-layout__item u-1-of-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="15" viewBox="0 0 60 15">
+                            <g id="No_button" data-name="No button" transform="translate(1)">
+                              <text id="No_thanks" data-name="No thanks" transform="translate(29 12)" fill="#45494d" font-size="12" font-family="Inter-SemiBold, Inter" font-weight="600" text-decoration="underline"><tspan x="-29.42" y="0">No thanks</tspan></text>
+                            </g>
+                          </svg>                          
+                    </div>
+                    <div class="o-layout__item u-1-of-2">
+                        <svg id="Yes_button" data-name="Yes button" xmlns="http://www.w3.org/2000/svg" width="56" height="16" viewBox="0 0 56 16">
+                            <rect id="Rectangle_94" data-name="Rectangle 94" width="56" height="16" rx="4" fill="#0f5eff"/>
+                            <text id="Yes" transform="translate(28 12)" fill="#fff" font-size="12" font-family="Inter-Regular, Inter"><tspan x="-10.159" y="0">Yes</tspan></text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="c-warning-notification u-display-none">
+                <p class="js-notification-message">
+                    Notification Period changed to 45min
+                </p>
+            </div>
             <section class="o-row">
                 <div class="o-container">
                     <div class="o-layout">
@@ -104,7 +125,7 @@
                         </div>
                         <div class="o-layout__item">
                             <ul class="o-list c-measurements js-measurements u-bring-to-front">
-                                <li class="c-measure">2000ml</li>
+                                <li class="c-measure" style="opacity: 0;" >2000ml</li>
                                 <li class="c-measure u-switch">1750ml</li>
                                 <li class="c-measure u-switch">1500ml</li>
                                 <li class="c-measure u-switch">1250ml</li>
@@ -112,7 +133,7 @@
                                 <li class="c-measure">750ml</li>
                                 <li class="c-measure">500ml</li>
                                 <li class="c-measure">250ml</li>
-                                <li class="c-measure" style="color: #0D55E6;">0ml</li>
+                                <li class="c-measure" style="opacity: 0;">0ml</li>
                             </ul>
                         </div>
                     </div>
@@ -126,6 +147,35 @@
                 <svg class="c-water__wave c-water__wave--front" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 20">
                     <path id="Union_16" data-name="Union 16" d="M420,20.005a359.535,359.535,0,0,0,51.1-4.5c13.4-2.2,26.5-5.2,27.3-5.4,15.6-3.6,19.6-5.4,30.1-7.4A167.4,167.4,0,0,1,560,0v20Zm-140,0H140a359.548,359.548,0,0,0,51.1-4.5c13.4-2.2,26.5-5.2,27.3-5.4,15.6-3.6,19.6-5.4,30.1-7.4A167.4,167.4,0,0,1,280,0a168.257,168.257,0,0,1,31.5,2.7c10.5,2,14.5,3.8,30.1,7.4.8.2,13.9,3.2,27.3,5.4a359.562,359.562,0,0,0,51.1,4.5Zm-280,0V0A168.257,168.257,0,0,1,31.5,2.7c10.5,2,14.5,3.8,30.1,7.4.8.2,13.9,3.2,27.3,5.4a359.55,359.55,0,0,0,51.1,4.5Z" transform="translate(0 0)"/>
                 </svg>     
+            </div>
+            <div class="c-settings u-display-none">
+                <div class="c-settings-container">
+                    <h2 class="c-titlebar u-background--dark">Notifications</h2>
+                    <ul class="o-list c-list-settings">
+                        <li class="c-list-settings__item c-lead c-lead--md">Period <span class="c-list-settings__data js-period">...</span>
+                        </li>
+                        <li class="c-list-settings__item c-lead c-lead--md">
+                            Silent Mode
+                            <label class="c-list-settings__data switch">
+                                <input type="checkbox">
+                                <span class="slider round"></span>
+                              </label>
+                        </li>
+                    </ul>
+                    <div class="c-confirm">
+                        <svg id="cancel_button" data-name="No button" xmlns="http://www.w3.org/2000/svg" width="88" height="32" viewBox="0 0 88 32">
+                            <g id="Rectangle_94" data-name="Rectangle 94" fill="none" stroke="#52616b" stroke-width="2">
+                            <rect width="88" height="32" rx="4" stroke="none"/>
+                            <rect x="1" y="1" width="86" height="30" rx="3" fill="none"/>
+                            </g>
+                            <text id="Cancel" transform="translate(44 20)" fill="#52616b" font-size="12" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="-20.152" y="0">Cancel</tspan></text>
+                        </svg>
+                        <svg id="confirm_button" data-name="Yes button" xmlns="http://www.w3.org/2000/svg" width="96" height="32" viewBox="0 0 96 32">
+                            <rect id="Rectangle_94" data-name="Rectangle 94" width="96" height="32" rx="4" fill="#0a42b3"/>
+                            <text id="Confirm" transform="translate(48 20)" fill="#fff" font-size="12" font-family="Inter-Regular, Inter"><tspan x="-22.491" y="0">Confirm</tspan></text>
+                          </svg>
+                    </div>
+                </div>
             </div>
         </main>
     </body>
