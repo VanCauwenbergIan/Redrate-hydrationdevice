@@ -43,6 +43,43 @@ const listenToSocket = function(){
     }
 }
 
+const DisplaySettings = function(){
+    const button = document.querySelector('.js-settings-button');
+    button.addEventListener("click", function(){
+        htmlSettings.classList.remove("u-display-none");
+    })
+    RemoveSettings();
+    listenToClickConfirm();
+}
+
+const RemoveSettings = function(){
+    const button = document.querySelector('.js-cancel')
+    button.addEventListener("click", function(){
+        htmlSettings.classList.add("u-display-none")
+    })
+}
+
+const listenToClickConfirm = function(){
+    const button = document.querySelector('.js-confirm');
+    button.addEventListener("click", function(){
+        let status = document.querySelector('.js-mode').value
+        if (status == 'on'){
+          status = 1;
+        }
+        else{
+          status = 0;
+        }
+
+        console.log("Nieuwe settings")
+        const jsonObject = {
+            Periode: document.querySelector('.js-period').value,
+            Modus: status
+        }
+        htmlSettings.classList.add("u-display-none")
+        console.log(jsonObject)
+    })
+}
+
 // functies voor socket listeners
 
 const updateTemperatuur = function(temperatuur){
@@ -57,6 +94,7 @@ const init = function () {
     console.log('DOM content loaded');
     htmlTemperatuur = document.querySelector('.js-temperature');
     htmlVochtigheid = document.querySelector('.js-rhumidity')
+    htmlSettings = document.querySelector('.js-settings')
 
     if (htmlTemperatuur){
         getTemp();
@@ -64,6 +102,7 @@ const init = function () {
     }
 
     listenToSocket();
+    DisplaySettings();
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -488,6 +488,13 @@ a:focus {
   text-align: center;
 }
 
+.c-nav__button-right {
+  background: transparent;
+  box-shadow: 0px 0px 0px transparent;
+  border: 0px solid transparent;
+  text-shadow: 0px 0px 0px transparent;
+}
+
 /* boxes detail screen */
 
 .c-details {
@@ -814,6 +821,7 @@ li.c-list__subitem + li.c-list__item {
 .c-titlebar {
   font-size: 15px;
   font-weight: 400;
+  margin: 0;
   color: #fff;
   padding: 8px 16px;
   width: 100%;
@@ -832,8 +840,16 @@ li.c-list__subitem + li.c-list__item {
 
 .c-list-settings__data {
   font-size: 14px;
-  color: #2f7cad;
+  color: #0e3e9d;
   font-weight: 600;
+}
+
+.js-period {
+  font-size: 14px;
+  color: #0e3e9d;
+  font-weight: 600;
+  border-width: 0px;
+  border: none;
 }
 
 .c-confirm {
@@ -878,7 +894,7 @@ li.c-list__subitem + li.c-list__item {
   width: 23px;
   left: 1px;
   bottom: 1px;
-  background-color: #f2f5f7;
+  background-color: #fff;
   -webkit-transition: 0.4s;
   transition: 0.4s;
 }
@@ -892,14 +908,14 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(17px);
-  -ms-transform: translateX(17px);
-  transform: translateX(17px);
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+  transform: translateX(15px);
 }
 
 /* Rounded sliders */
 .slider.round {
-  border-radius: 34px;
+  border-radius: 24px;
 }
 
 .slider.round:before {

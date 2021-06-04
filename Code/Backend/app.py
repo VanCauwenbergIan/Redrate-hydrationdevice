@@ -67,7 +67,7 @@ def vochtigheid_inlezen():
     # (VOUT - 0.958)/0.0307
     # uit datasheet hih4010 (ander serrie = andere waardes of course)
 
-    if ((vochtigheid > vorige_vochtigheid + 2.5) or (vochtigheid < vorige_vochtigheid - 2.5)) and vochtigheid > 0 and vochtigheid >= 100:
+    if ((vochtigheid > vorige_vochtigheid + 2.5) or (vochtigheid < vorige_vochtigheid - 2.5)) and vochtigheid > 0 and vochtigheid <= 100:
         print(f"Huidige relative luchtvochtigheid: {vochtigheid}")
         add_log({'datumtijd': None, 'gemetenwaarde': vochtigheid, 'status': None,
                 'note': 'relatieve luchtvochtigheid in %', 'deviceid': 3, 'actieid': 4})
@@ -101,6 +101,10 @@ def led():
 
 def liter():
     pass
+
+
+init_lcd()
+led()
 
 
 # app en socket routes
@@ -167,8 +171,6 @@ def add_log(msg):
 
 
 def main_code():
-    init_lcd()
-    led()
     while True:
         vochtigheid_inlezen()
         temperatuur_inlezen()
