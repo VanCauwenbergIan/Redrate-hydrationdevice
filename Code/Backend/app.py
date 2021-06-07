@@ -12,6 +12,7 @@ from flask_cors import CORS
 from flask_socketio import SocketIO, emit, send
 from flask import Flask, jsonify, request
 from repositories.DataRepository import DataRepository
+from repositories.hx711 import HX711
 
 
 # code hardware
@@ -22,6 +23,7 @@ GPIO.setmode(GPIO.BCM)
 hih = 0
 vorige_temperatuur = 0
 vorige_vochtigheid = 0
+vorige_gewicht = 0
 periode = 10
 
 rood = 26
@@ -38,6 +40,17 @@ pwm_groen = GPIO.PWM(groen, 100)
 pwm_rood.start(0)
 pwm_blauw.start(0)
 pwm_groen.start(0)
+
+hx = HX711(dout_pin=24, pd_sck_pin=23)
+err = hx.zero()
+if err:
+    raise ValueError('Tare is unsuccessful.')
+# everything that is the plate / is on the plate gets substracted from the total weight. (still counts for your max limit though)
+# reading = hx.get_raw_data_mean()
+# print(reading)
+# ratio = raw value / weight in g test object
+# test object has a known weight
+hx.set_scale_ratio(872.5007320644216)
 
 
 def temperatuur_inlezen():
@@ -100,7 +113,16 @@ def led():
 
 
 def liter():
-    pass
+    global vorige_gewicht
+    global hx
+
+    gewicht = hx.get_weight_mean(20)
+    print(f"{gewicht}g")
+    if ((gewicht > vorige_gewicht + 20) or (gewicht < vorige_gewicht - 20)) and gewicht > 0 and gewicht <= 1500:
+        print(f"Huidige gewicht: {gewicht}")
+        add_log({'datumtijd': None, 'gemetenwaarde': gewicht, 'status': None,
+                'note': 'gewicht in g', 'deviceid': 2, 'actieid': 2})
+        vorige_gewicht = gewicht
 
 
 init_lcd()
@@ -174,6 +196,7 @@ def main_code():
     while True:
         vochtigheid_inlezen()
         temperatuur_inlezen()
+        liter()
         time.sleep(1)
 
 
