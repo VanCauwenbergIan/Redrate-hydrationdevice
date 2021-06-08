@@ -22,7 +22,7 @@
     </head>
     <body class="u-space-center-center">
         <main class="c-main">
-            <header class="c-header u-bring-to-front--exxtra">
+            <header class="c-header js-header u-bring-to-front--exxtra">
                 <div class="c-nav">
                     <span class="c-nav__item c-nav__button-left" style="opacity: 0;">
                       <svg id="Return_button" data-name="Return button" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -79,8 +79,9 @@
                                     <p class="c-lead c-lead--md-semibold">
                                         Of your daily water intake
                                     </p>
-                                    <p class="c-lead c-lead--md-semibold">
-                                        You reached 2 liter! Keep it up !
+                                    <p class="c-lead c-lead--md-bold js-2liter-message u-display-none-o">
+                                        You reached 2 liter! 
+                                        Keep it up!
                                     </p>
                                 </div>
                             </div>
@@ -162,8 +163,8 @@
                         </label>
                         <li class="c-list-settings__item c-lead c-lead--md">
                             Silent Mode:
-                            <label class="c-list-settings__data switch js-mode">
-                                <input type="checkbox">
+                            <label class="c-list-settings__data switch">
+                                <input type="checkbox" value="on" class="js-mode">
                                 <span class="slider round"></span>
                               </label>
                         </li>

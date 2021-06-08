@@ -132,12 +132,44 @@
                 Relative humidity: <span class="c-list__data js-rhumidity">...%</span>
               </li>
               <li class="c-list__item c-lead c-lead--md">
-                  Water drunk: <span class="c-list__data js-waterdrunk">... l / min 1,5l</span>
+                  Water drunk: <span class="c-list__data js-waterdrunk">0 l / min 1,5l</span>
               </li>
             </ul>
           </div>
         </div>
       </section>
+      <div class="c-settings js-settings u-display-none"> 
+        <div class="c-settings-container">
+            <h2 class="c-titlebar u-background--dark">Notifications</h2>
+            <form class="c-list-settings js-change-settings">
+                <label class="c-list-settings__item c-lead c-lead--md">Period: 
+                    <div class="c-list-settings__data">
+                    <input type="number" min="1" max="120" class="js-period">min</input>
+                    </div>
+                </label>
+                <li class="c-list-settings__item c-lead c-lead--md">
+                    Silent Mode:
+                    <label class="c-list-settings__data switch js-mode">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                      </label>
+                </li>
+            </form>
+            <div class="c-confirm">
+                <svg class="js-cancel" id="cancel_button" cla data-name="No button" xmlns="http://www.w3.org/2000/svg" width="88" height="32" viewBox="0 0 88 32">
+                    <g id="Rectangle_94" data-name="Rectangle 94" fill="none" stroke="#52616b" stroke-width="2">
+                    <rect width="88" height="32" rx="4" stroke="none"/>
+                    <rect x="1" y="1" width="86" height="30" rx="3" fill="none"/>
+                    </g>
+                    <text id="Cancel" transform="translate(44 20)" fill="#52616b" font-size="12" font-family="Inter-SemiBold, Inter" font-weight="600"><tspan x="-20.152" y="0">Cancel</tspan></text>
+                </svg>
+                <svg class="js-confirm" id="confirm_button" data-name="Yes button" xmlns="http://www.w3.org/2000/svg" width="96" height="32" viewBox="0 0 96 32">
+                    <rect id="Rectangle_94" data-name="Rectangle 94" width="96" height="32" rx="4" fill="#0a42b3"/>
+                    <text id="Confirm" transform="translate(48 20)" fill="#fff" font-size="12" font-family="Inter-Regular, Inter"><tspan x="-22.491" y="0">Confirm</tspan></text>
+                  </svg>
+            </div>
+        </div>
+      </div>
       </main>
     </body>
 </html>
