@@ -20,19 +20,22 @@ spi = spidev.SpiDev()
 spir = SpiRepository()
 GPIO.setmode(GPIO.BCM)
 
-hih = 0
 vorige_temperatuur = 0
 vorige_vochtigheid = 0
 vorige_gewicht = 0
 periode = 10
+gedronken_water = 0
 
 rood = 26
 groen = 19
 blauw = 13
+knop = 12
+hih = 0
 
 GPIO.setup(rood, GPIO.OUT)
 GPIO.setup(blauw, GPIO.OUT)
 GPIO.setup(groen, GPIO.OUT)
+GPIO.setup(knop, GPIO.IN, GPIO.PUD_UP)
 pwm_rood = GPIO.PWM(rood, 100)
 pwm_blauw = GPIO.PWM(blauw, 100)
 pwm_groen = GPIO.PWM(groen, 100)
@@ -106,28 +109,37 @@ def init_lcd():
         lcd.write_message(f"{new_list[0]}")
 
 
-def led():
+def led_wit():
     pwm_rood.ChangeDutyCycle(25)
     pwm_blauw.ChangeDutyCycle(25)
     pwm_groen.ChangeDutyCycle(25)
 
 
-def liter():
+def led_rood():
+    pwm_rood.ChangeDutyCycle(25)
+    pwm_blauw.ChangeDutyCycle(0)
+    pwm_groen.ChangeDutyCycle(0)
+
+
+def led_blauw():
+    pwm_rood.ChangeDutyCycle(0)
+    pwm_blauw.ChangeDutyCycle(25)
+    pwm_groen.ChangeDutyCycle(0)
+
+
+def gewicht_inlezen():
     global vorige_gewicht
     global hx
 
     gewicht = hx.get_weight_mean(20)
     print(f"{gewicht}g")
-    if ((gewicht > vorige_gewicht + 20) or (gewicht < vorige_gewicht - 20)) and gewicht > 0 and gewicht <= 1500:
-        print(f"Huidige gewicht: {gewicht}")
+    if ((gewicht > vorige_gewicht + 10 or (gewicht < vorige_gewicht - 10)) and gewicht > 0 and gewicht <= 1500):
         add_log({'datumtijd': None, 'gemetenwaarde': gewicht, 'status': None,
                 'note': 'gewicht in g', 'deviceid': 2, 'actieid': 2})
         vorige_gewicht = gewicht
 
 
 init_lcd()
-led()
-
 
 # app en socket routes
 app = Flask(__name__)
@@ -162,6 +174,16 @@ def get_hum():
         return jsonify(vochtigheid=data), 200
     else:
         return jsonify(message='error'), 404
+
+
+@app.route(endpoint + '/today/prog')
+def get_prog():
+    data = DataRepository.read_device_today_all(2)
+    if data is not None:
+        return jsonify(progress=data), 200
+    else:
+        return jsonify(message='error'), 404
+
 # SOCKET IO
 
 
@@ -194,14 +216,17 @@ def add_log(msg):
 
 def main_code():
     while True:
+        led_rood()
+        GPIO.wait_for_edge(knop, GPIO.RISING)
+        led_wit()
         vochtigheid_inlezen()
         temperatuur_inlezen()
-        liter()
-        time.sleep(1)
+        gewicht_inlezen()
+        time.sleep(periode)
 
 
-thread = threading.Timer(1, main_code)
-thread.start()
+main_thread = threading.Timer(periode, main_code)
+main_thread.start()
 
 # led strip interfering with lcd :(
 

@@ -21,3 +21,9 @@ class DataRepository:
         sql = "SELECT * FROM historiek WHERE deviceid = %s ORDER BY datumtijd DESC LIMIT 1"
         params = [deviceid]
         return Database.get_one_row(sql, params)
+
+    @staticmethod
+    def read_device_today_all(deviceid):
+        sql = f"SELECT * FROM historiek WHERE deviceid = {'%s'} AND DATE_FORMAT(datumtijd, '%Y-%m-%d') = CURDATE() ORDER BY datumtijd;"
+        params = [deviceid]
+        return Database.get_rows(sql, params)
