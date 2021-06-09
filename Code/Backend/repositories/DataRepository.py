@@ -27,3 +27,8 @@ class DataRepository:
         sql = f"SELECT * FROM historiek WHERE deviceid = {'%s'} AND DATE_FORMAT(datumtijd, '%Y-%m-%d') = CURDATE() ORDER BY datumtijd;"
         params = [deviceid]
         return Database.get_rows(sql, params)
+
+    @staticmethod
+    def read_week():
+        sql = "SELECT historiekid, dayofweek(datumtijd) AS `dag`, gemetenwaarde, note FROM historiek WHERE week(datumtijd, 7) = week(curdate(), 7) AND deviceid = 2;"
+        return Database.get_rows(sql)

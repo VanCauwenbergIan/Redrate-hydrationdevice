@@ -190,6 +190,8 @@ def get_prog():
     else:
         return jsonify(message='error'), 404
 
+# enkel er later bijgekomen voor de warning
+
 
 @app.route(endpoint + '/today/warning')
 def get_temp_hum():
@@ -197,6 +199,15 @@ def get_temp_hum():
     hum = DataRepository.read_device_today(3)
     if temp is not None and hum is not None:
         return jsonify(temperatuur=temp, vochtigheid=hum), 200
+    else:
+        return jsonify(message='error'), 404
+
+
+@app.route(endpoint + '/week')
+def get_data_thisweek():
+    data = DataRepository.read_week()
+    if data is not None:
+        return jsonify(week=data), 200
     else:
         return jsonify(message='error'), 404
 

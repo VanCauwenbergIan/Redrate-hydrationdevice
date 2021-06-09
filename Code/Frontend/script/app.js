@@ -21,11 +21,68 @@ const showWarning = function(jsonObject){
     updateMeasurements(Globalprocent);
 }
 
+const showSummary = function(jsonObject){
+    console.log(jsonObject);
+    let zondag = 0, maandag = 0, dinsdag = 0, woensdag = 0, donderdag = 0, vrijdag = 0, zaterdag = 0;
+    let weekObject = jsonObject.week
+    let baseline = 0;
+    for (let i = 0; i < weekObject.length; i++){
+        let gewicht = weekObject[i].gemetenwaarde
+        if (i == 0){
+            baseline = weekObject[0].gemetenwaarde
+            console.log(`Nieuwe fles: inhoud ${baseline/1000} l`)
+        }
+        if (i >= 1){
+            let vorig_gewicht = weekObject[i - 1].gemetenwaarde
+            if (gewicht < vorig_gewicht){
+                let verschil = (vorig_gewicht - gewicht)/1000;
+                let dag = weekObject[i].dag
+                if (dag == 1){
+                    zondag += verschil
+                }
+                else if (dag == 2){
+                    maandag += verschil
+                }
+                else if (dag == 3){
+                    dinsdag += verschil
+                }
+                else if (dag == 4){
+                    woensdag += verschil
+                }
+                else if (dag == 5){
+                    donderdag += verschil
+                }
+                else if (dag == 6){
+                    vrijdag += verschil
+                }
+                else if (dag == 7){
+                    zaterdag += verschil
+                }
+            }
+            else{
+                baseline = gewicht                
+            }
+        }
+    }
+    let ArrayWeek = [maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag];
+    console.log(`Week verwerkt: ${ArrayWeek}`)
+
+    let totaal = 0;
+    for (let i = 0; i < ArrayWeek.length; i++){
+        totaal += ArrayWeek[i];
+    }
+
+    updateSummary(ArrayWeek);
+
+    document.querySelector('.js-waterweek').innerHTML = `${totaal.toFixed(4)} l`
+    document.querySelector('.js-average').innerHTML = `${(totaal / 7).toFixed(4)} l / day`
+}
+
 const showDailyProgress = function(jsonObject){
     if (jsonObject.progress.length > 0){
-        console.log(jsonObject);
         let progress = 0;
         let baseline = 0;
+        console.log(jsonObject);
         // console.log(baseline);
         for (let i = 0; i < jsonObject.progress.length; i++){
             let gewicht = jsonObject.progress[i].gemetenwaarde
@@ -70,17 +127,20 @@ const showDailyProgress = function(jsonObject){
         }
         else {
             let liter = ((progress_in_procent / 100) * 1.5).toFixed(4);
+            console.log(`liter: ${liter}`)
             innerhtml = `${liter}l / min 1,5l`;
             document.querySelector('.js-waterdrunk').innerHTML = innerhtml;
         }
     }
     else {
-        htmlDailyProgress.innerHTML = 0
-        htmlWaterDrunk.innerHTML = 0 + ' l'
-        htmlBottlesWhole.innerHTML = 1.5/(baseline/1000)
+        let baseline = 500;
+
+        htmlDailyProgress.innerHTML = 0;
+        htmlWaterDrunk.innerHTML = 0 + ' l';
+        htmlBottlesWhole.innerHTML = 1.5/(baseline/1000);
     
         updateWaves(0);
-        }
+    }
 }
 
 const callBackSettings = function(jsonObject){
@@ -103,6 +163,10 @@ const getWarning = function(){
 
 const getDailyProgress = function(){
     handleData(`http://192.168.168.168:5000/api/v1/today/prog`, showDailyProgress);
+}
+
+const getSummary = function(){
+    handleData(`http://192.168.168.168:5000/api/v1/week`, showSummary);
 }
 
 // socket listeners
@@ -128,7 +192,9 @@ const listenToSocket = function(){
         }
         else if (jsonObject.deviceid == 2){
             console.log(`Nieuwe waarde fles: ${jsonObject.gemetenwaarde}`);
-            getDailyProgress();
+            if (htmlDailyProgress){
+                getDailyProgress();
+            }
         }
         listenToConditions(temp, rv)
     })
@@ -420,6 +486,59 @@ const updatePeriod = function(){
     
 }
 
+const updateSummary = function(week){
+    console.log(week)
+    for (let i = 0; i < week.length; i++){
+        if (week[i] <= 1.5){
+            week[i] = Math.round(week[i] / 1.5 * 100);
+        }
+        else {
+            week[i] = 100;
+        }
+    }
+    document.querySelector('.js-chart').innerHTML = `
+    <tr>
+    <td>
+        <!-- Mon bar -->
+        <div class="bar vert-bar ${lightBar(week[0])}" style="height: ${week[0]}%;"></div>
+    </td>
+    <td>
+        <!-- Tue bar -->
+        <div class="bar vert-bar ${lightBar(week[1])}" style="height: ${week[1]}%;"></div>
+    </td>
+    <td>
+        <!-- Wed bar -->
+        <div class="bar vert-bar ${lightBar(week[2])}" style="height: ${week[2]}%;"></div>
+    </td>
+    <td>
+      <!-- Tue bar -->
+      <div class="bar vert-bar ${lightBar(week[3])}" style="height: ${week[3]}%;"></div>
+    </td>
+    <td>
+      <!-- Fri bar -->
+      <div class="bar vert-bar ${lightBar(week[4])}" style="height: ${week[4]}%;"></div>
+    </td>
+    <td>
+      <!-- Sat bar -->
+      <div class="bar vert-bar ${lightBar(week[5])}" style="height: ${week[5]}%;"></div>
+    </td>
+    <td>
+      <!-- Sun bar -->
+      <div class="bar vert-bar ${lightBar(week[6])}" style="height: ${week[6]}%;"></div>
+      </td>
+    </tr>
+    <tr class="days">
+        <td class="day">Mon</td>
+        <td class="day">Tue</td>
+        <td class="day">Wed</td>
+        <td class="day">Thu</td>
+        <td class="day">Fri</td>
+        <td class="day">Sat</td>
+        <td class="day">Sun</td>
+    </tr>`
+
+}
+
 const fraction = function(getal) {
     let fraction = getal - Math.floor(getal);
     let pre = Math.pow(10, /\d*$/.exec(new String(getal))[0].length);
@@ -434,6 +553,15 @@ const fraction = function(getal) {
   
     return teller + "/" + noemer;
   }
+
+const lightBar = function(procent) {
+    if (procent < 75){
+        return 'bar--light'
+    }
+    else {
+        return ''
+    }
+}
 
 const init = function () {
     console.log('DOM content loaded');
@@ -454,6 +582,7 @@ const init = function () {
     if (htmlTemperatuur){
         getTemp();
         getHum();
+        getSummary();
     }
 
     if(htmlDailyProgress){
