@@ -45,21 +45,27 @@ const showDailyProgress = function(jsonObject){
                 }
             }
         }
-
+        socket.emit("F2B_progress", { Progress: progress});
         let progress_in_procent = (progress / 1.5 * 100).toFixed(2);
 
         if (htmlDailyProgress){
             htmlDailyProgress.innerHTML = progress_in_procent
             htmlWaterDrunk.innerHTML = progress.toFixed(3) + ' l'
-            htmlBottlesWhole.innerHTML = Math.floor(1.5/(baseline/1000) - progress)
-            htmlBottlesFraction.innerHTML = ` ${fraction((((1.5/(baseline/1000) - progress)) - (Math.floor(1.5/(baseline/1000) - progress))).toFixed(1))}`
-            updateWaves(progress_in_procent*0.75)
-
-            if (progress > 2){
-               document.querySelector('.js-2liter-message').classList.remove('u-display-none-o')
+            if (progress <= 1.5){
+                htmlBottlesWhole.innerHTML = Math.floor((1.5 - progress)/(baseline/1000))
+                htmlBottlesFraction.innerHTML = ` ${fraction(((1.5 - progress)/(baseline/1000) -  Math.floor((1.5 - progress)/(baseline/1000))).toFixed(1))}`
             }
             else {
-                document.querySelector('.js-2liter-message').classList.add('u-display-none-o')
+                htmlBottlesWhole.innerHTML = 0;
+                htmlBottlesFraction.innerHTML = 0;
+            }
+            updateWaves(progress_in_procent*0.75);
+
+            if (progress > 2){
+               document.querySelector('.js-2liter-message').classList.remove('u-display-none-o');
+            }
+            else {
+                document.querySelector('.js-2liter-message').classList.add('u-display-none-o');
             }
         }
         else {
@@ -128,11 +134,13 @@ const listenToSocket = function(){
     })
     socket.on("B2F_new_settings", function (jsonObject){
         console.log(`Nieuwe settings bevestigd: ${jsonObject.period}`)
-        document.querySelector('.js-notification-message').innerHTML = `Notification period changed to ${jsonObject.period}min`;
-        htmlNotification.classList.remove("u-display-none")
-        setTimeout (function(){
-            htmlNotification.classList.add("u-display-none")
-        }, 5000)
+        if (htmlDailyProgress){
+            document.querySelector('.js-notification-message').innerHTML = `Notification period changed to ${jsonObject.period}min`;
+            htmlNotification.classList.remove("u-display-none")
+            setTimeout (function(){
+                htmlNotification.classList.add("u-display-none")
+            }, 5000);
+        }
         document.querySelector('.js-period').value = jsonObject.period
     })
 }
@@ -170,7 +178,9 @@ const listenToClickConfirm = function(){
 
         socket.emit("F2B_new_settings", { Periode: Periode, Mode: status });
 
-        updateMeasurements(Globalprocent);
+        if (htmlDailyProgress){
+            updateMeasurements(Globalprocent);
+        }
     })
 }
 
@@ -226,12 +236,12 @@ const updateVochtigheid = function(vochtigheid){
 
 const updateWaves = function(procent){
     Globalprocent = procent; // bijgemaakt voor warning (anders is bij een translateY van 0% het logo enzv. niet zichtbaar)
-   if (procent < 100){
+   if (procent <= 100){
         htmlWaves.style.transform = `translateY(${100 - procent}%)`;
         updateMeasurements(procent);
    }
    else{
-        htmlWaves.style.transform = `translateY(${100 - procent}%)`;
+        htmlWaves.style.transform = `translateY(${0}%)`;
         updateMeasurements(100);
    }
 }
@@ -402,7 +412,15 @@ const updateMeasurements = function(procent){
     DisplaySettings();
 }
 
-function fraction(getal) {
+const updatePeriod = function(){
+    socket.emit("F2B_request_settings");
+    socket.on("B2F_settings", function (jsonObject){
+        document.querySelector('.js-period').value = jsonObject.period
+    })
+    
+}
+
+const fraction = function(getal) {
     let fraction = getal - Math.floor(getal);
     let pre = Math.pow(10, /\d*$/.exec(new String(getal))[0].length);
     const gcd = function(fraction, pre) {
@@ -444,6 +462,7 @@ const init = function () {
 
     getDailyProgress();
 
+    updatePeriod();
     listenToSocket();
     listenToClickConfirm();
     DisplaySettings();

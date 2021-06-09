@@ -3,7 +3,7 @@ from RPi import GPIO
 import threading
 from flask.wrappers import Request
 import spidev
-from subprocess import check_output
+from subprocess import check_output, call
 
 from repositories.SpiClass import SpiRepository
 from repositories.displayI2c_Repository import LCDRepositoryI2C
@@ -23,8 +23,8 @@ GPIO.setmode(GPIO.BCM)
 vorige_temperatuur = 0
 vorige_vochtigheid = 0
 vorige_gewicht = 0
-periode = 1
-gedronken_water = 0
+periode = 10
+progress = 0
 
 rood = 26
 groen = 19
@@ -107,6 +107,12 @@ def init_lcd():
         lcd.write_message(f"{new_list[1]}")
     else:
         lcd.write_message(f"{new_list[0]}")
+
+
+def lcd_write_progress():
+    lcd = LCDRepositoryI2C(20, 21)
+    lcd.send_instruction(0xC0)
+    lcd.write_message(f"Progress: {round(progress,2)}l")
 
 
 def led_wit():
@@ -228,15 +234,38 @@ def add_settings(msg):
 
     print(f"received: {msg}")
     periode = int(msg['Periode']) * 60
+    status = bool(msg['Mode'])
+    if status == 0:
+        call("echo W8w00rd | sudo -S shutdown -h now", shell=True)
     print(f"Nieuwe periode: {periode}")
     socketio.emit('B2F_new_settings', {'period': (periode / 60)})
+
+
+@socketio.on("F2B_request_settings")
+def get_settings():
+    global periode
+    if ((periode / 60) >= 1):
+        socketio.emit('B2F_settings', {'period': (periode / 60)})
+
+
+@socketio.on("F2B_progress")
+def check_progress(msg):
+    global progress
+
+    print(f"received: {msg}")
+    progress = float(msg['Progress'])
+    lcd_write_progress()
+    print(f"Hoeveelheid water gedronken: {progress}")
 
 
 def main_code():
     while True:
         led_rood()
         GPIO.wait_for_edge(knop, GPIO.RISING)
-        led_wit()
+        if progress >= 1.5:
+            led_blauw()
+        else:
+            led_wit()
         vochtigheid_inlezen()
         temperatuur_inlezen()
         gewicht_inlezen()
@@ -246,7 +275,6 @@ def main_code():
 main_thread = threading.Timer(periode, main_code)
 main_thread.start()
 
-# led strip interfering with lcd :(
 
 # Debugging moet uit staan voor threading
 if __name__ == '__main__':
