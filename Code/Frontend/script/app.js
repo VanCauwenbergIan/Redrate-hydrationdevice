@@ -1,7 +1,7 @@
 const lanIP = `${window.location.hostname}:5000`;
 const socket = io(`http://${lanIP}`);
 
-let htmlTemperatuur, htmlVochtigheid, htmlDailyProgress, htmlWaterDrunk, htmlBottlesWhole, htmlBottlesFraction, htmlSwitchProgress, htmlSwitchInfo;
+let htmlTemperatuur, htmlVochtigheid, htmlDailyProgress, htmlWaterDrunk, htmlBottlesWhole, htmlBottlesFraction, htmlSwitchProgress, htmlSwitchInfo, htmlWarning, htmlNotification, Globalprocent;
 
 // callback-visualisation -show
 
@@ -13,6 +13,12 @@ const showTemp = function(jsonObject){
 const showHum = function(jsonObject){
     console.log(jsonObject);
     updateVochtigheid(jsonObject.vochtigheid.gemetenwaarde);
+}
+
+const showWarning = function(jsonObject){
+    console.log(jsonObject);
+    listenToConditions(jsonObject.temperatuur.gemetenwaarde,jsonObject.vochtigheid.gemetenwaarde)
+    updateMeasurements(Globalprocent);
 }
 
 const showDailyProgress = function(jsonObject){
@@ -41,12 +47,12 @@ const showDailyProgress = function(jsonObject){
         }
 
         let progress_in_procent = (progress / 1.5 * 100).toFixed(2);
-        // let bottles_whole = Math.round((1.5/(baseline/1000)) - Math.round(1000 / baseline))
 
         if (htmlDailyProgress){
             htmlDailyProgress.innerHTML = progress_in_procent
             htmlWaterDrunk.innerHTML = progress.toFixed(3) + ' l'
-            htmlBottlesWhole.innerHTML = Math.round((1.5/(baseline/1000)) - progress)
+            htmlBottlesWhole.innerHTML = Math.floor(1.5/(baseline/1000) - progress)
+            htmlBottlesFraction.innerHTML = ` ${fraction((((1.5/(baseline/1000) - progress)) - (Math.floor(1.5/(baseline/1000) - progress))).toFixed(1))}`
             updateWaves(progress_in_procent*0.75)
 
             if (progress > 2){
@@ -65,11 +71,16 @@ const showDailyProgress = function(jsonObject){
     else {
         htmlDailyProgress.innerHTML = 0
         htmlWaterDrunk.innerHTML = 0 + ' l'
-        htmlBottlesWhole.innerHTML = 3
+        htmlBottlesWhole.innerHTML = 1.5/(baseline/1000)
     
         updateWaves(0);
         }
 }
+
+const callBackSettings = function(jsonObject){
+    console.log(jsonObject);
+}
+
 // data access -get
 
 const getTemp = function(){
@@ -80,6 +91,10 @@ const getHum = function(){
     handleData(`http://192.168.168.168:5000/api/v1/today/hum`, showHum); 
 }
 
+const getWarning = function(){
+    handleData(`http://192.168.168.168:5000/api/v1/today/warning`, showWarning); 
+}
+
 const getDailyProgress = function(){
     handleData(`http://192.168.168.168:5000/api/v1/today/prog`, showDailyProgress);
 }
@@ -88,21 +103,37 @@ const getDailyProgress = function(){
 
 const listenToSocket = function(){
     socket.on("B2F_addlog", function (jsonObject){
+        let temp = 0;
+        let rv = 0;
         console.log(`boodschap server: aangepaste waarde of status`);
-        if (htmlTemperatuur) {
-            if (jsonObject.deviceid == 4){
-                console.log(`Nieuwe temperatuur: ${jsonObject.gemetenwaarde}°C`);
-                updateTemperatuur(jsonObject.gemetenwaarde);
-            }
-            else if (jsonObject.deviceid == 3){
-                console.log(`Nieuwe relatieve luchtvochtigheid: ${jsonObject.gemetenwaarde}%`);
-                updateVochtigheid(jsonObject.gemetenwaarde);
+        if (jsonObject.deviceid == 4){
+            console.log(`Nieuwe temperatuur: ${jsonObject.gemetenwaarde}°C`);
+            temp = jsonObject.gemetenwaarde;
+            if (htmlTemperatuur){
+                updateTemperatuur(temp);
+            } 
+        }
+        else if (jsonObject.deviceid == 3){
+            console.log(`Nieuwe relatieve luchtvochtigheid: ${jsonObject.gemetenwaarde}%`);
+            rv = jsonObject.gemetenwaarde
+            if (htmlVochtigheid){
+                updateVochtigheid(rv);
             }
         }
-        if (jsonObject.deviceid == 2){
-            console.log(`Nieuwe relatieve luchtvochtigheid: ${jsonObject.gemetenwaarde}%`);
+        else if (jsonObject.deviceid == 2){
+            console.log(`Nieuwe waarde fles: ${jsonObject.gemetenwaarde}`);
             getDailyProgress();
         }
+        listenToConditions(temp, rv)
+    })
+    socket.on("B2F_new_settings", function (jsonObject){
+        console.log(`Nieuwe settings bevestigd: ${jsonObject.period}`)
+        document.querySelector('.js-notification-message').innerHTML = `Notification period changed to ${jsonObject.period}min`;
+        htmlNotification.classList.remove("u-display-none")
+        setTimeout (function(){
+            htmlNotification.classList.add("u-display-none")
+        }, 5000)
+        document.querySelector('.js-period').value = jsonObject.period
     })
 }
 
@@ -112,7 +143,6 @@ const DisplaySettings = function(){
         htmlSettings.classList.remove("u-display-none");
     })
     RemoveSettings();
-    listenToClickConfirm();
 }
 
 const RemoveSettings = function(){
@@ -134,13 +164,54 @@ const listenToClickConfirm = function(){
         }
 
         console.log("Nieuwe settings")
-        const jsonObject = {
-            Periode: document.querySelector('.js-period').value,
-            Modus: status
-        }
-        htmlSettings.classList.add("u-display-none")
-        console.log(jsonObject)
+        let Periode = document.querySelector('.js-period').value;
+        
+        htmlSettings.classList.add("u-display-none");
+
+        socket.emit("F2B_new_settings", { Periode: Periode, Mode: status });
+
+        updateMeasurements(Globalprocent);
     })
+}
+
+const listenToClickWarningYes = function(){
+    const button = document.querySelector('.js-warning-yes');
+    button.addEventListener("click", function(){
+        htmlWarning.classList.add('u-display-none')
+        htmlSettings.classList.remove("u-display-none");
+        RemoveSettings();
+        updateMeasurements(Globalprocent);
+    })
+}
+
+const listenToClickWarningNo = function(){
+    const button = document.querySelector('.js-warning-no');
+    button.addEventListener("click", function(){
+        htmlWarning.classList.add('u-display-none');
+        updateMeasurements(Globalprocent);
+    })
+}
+
+const listenToConditions = function(temperatuur, rvocht){
+    if (htmlDailyProgress){
+        if (temperatuur >= 25 && rvocht <= 30){
+            document.querySelector('.js-warning-content').innerHTML = "Looks like it's hot and dry today!"
+            htmlWarning.classList.remove('u-display-none')
+        }
+        else if (temperatuur >= 25){
+            document.querySelector('.js-warning-content').innerHTML = "Looks like it's hot today!"
+            htmlWarning.classList.remove('u-display-none')
+        }
+        else if (rvocht <= 30){
+            document.querySelector('.js-warning-content').innerHTML = "Looks like it's dry today!"
+            htmlWarning.classList.remove('u-display-none')
+        }
+        else {
+            htmlWarning.classList.add('u-display-none')
+        }
+        listenToClickWarningYes();
+        listenToClickWarningNo();
+    }
 }
 
 // functies voor socket listeners
@@ -154,6 +225,7 @@ const updateVochtigheid = function(vochtigheid){
 }
 
 const updateWaves = function(procent){
+    Globalprocent = procent; // bijgemaakt voor warning (anders is bij een translateY van 0% het logo enzv. niet zichtbaar)
    if (procent < 100){
         htmlWaves.style.transform = `translateY(${100 - procent}%)`;
         updateMeasurements(procent);
@@ -278,7 +350,7 @@ const updateMeasurements = function(procent){
         htmlSwitchInfo.classList.remove('u-switch')
     }
 
-    if (procent >= 98){
+    if (procent >= 98 && htmlNotification.classList.contains("u-display-none") == 1 && htmlWarning.classList.contains("u-display-none") == 1){
         document.querySelector('.js-header').innerHTML =`
         <div class="c-nav">
             <span class="c-nav__item c-nav__button-left" style="opacity: 0;">
@@ -330,6 +402,21 @@ const updateMeasurements = function(procent){
     DisplaySettings();
 }
 
+function fraction(getal) {
+    let fraction = getal - Math.floor(getal);
+    let pre = Math.pow(10, /\d*$/.exec(new String(getal))[0].length);
+    const gcd = function(fraction, pre) {
+      if (!pre)
+        return fraction;
+      return gcd(pre, fraction % pre);
+    }
+    let ggd = gcd(Math.round(fraction * pre), pre);
+    var noemer = pre / ggd;
+    var teller = Math.round(fraction * pre) / ggd;
+  
+    return teller + "/" + noemer;
+  }
+
 const init = function () {
     console.log('DOM content loaded');
     htmlTemperatuur = document.querySelector('.js-temperature');
@@ -338,19 +425,27 @@ const init = function () {
     htmlDailyProgress = document.querySelector('.js-percentage');
     htmlWaterDrunk = document.querySelector('.js-info-waterdrunk');
     htmlBottlesWhole = document.querySelector('.js-info-bottles');
+    htmlBottlesFraction = document.querySelector('.js-fraction-bottles')
     htmlWaves = document.querySelector('.js-waves');
     htmlMeasurements = document.querySelector('.js-measurements');
-    htmlSwitchProgress = document.querySelector('.js-switch-percentage')
-    htmlSwitchInfo = document.querySelector('.js-switch-info')
+    htmlSwitchProgress = document.querySelector('.js-switch-percentage');
+    htmlSwitchInfo = document.querySelector('.js-switch-info');
+    htmlWarning = document.querySelector('.js-warning');
+    htmlNotification = document.querySelector('.js-warning-notification');
 
     if (htmlTemperatuur){
         getTemp();
         getHum();
     }
 
+    if(htmlDailyProgress){
+        getWarning();
+    }
+
     getDailyProgress();
 
     listenToSocket();
+    listenToClickConfirm();
     DisplaySettings();
 }
 

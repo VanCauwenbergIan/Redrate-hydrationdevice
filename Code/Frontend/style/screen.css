@@ -593,6 +593,7 @@ li.c-list__subitem + li.c-list__item {
 .c-lead--xs {
   font-size: 11px;
   line-height: 20px;
+  font-weight: 500;
 }
 
 .c-lead--md-bold {
@@ -778,11 +779,13 @@ li.c-list__subitem + li.c-list__item {
 
 /* warning */
 .c-warning {
+  width: 100%;
   position: absolute;
   font-size: 12px;
   font-weight: 500;
   padding: 48px 20px 16px;
   background-color: #fff;
+  box-shadow: 0 4px 2px 0px gray;
 }
 
 .c-warning-notification {
@@ -794,6 +797,7 @@ li.c-list__subitem + li.c-list__item {
   padding-bottom: 8px;
   text-align: center;
   background-color: #fff;
+  box-shadow: 0 4px 2px 0px gray;
 }
 
 /* settings */

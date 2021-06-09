@@ -23,7 +23,7 @@ GPIO.setmode(GPIO.BCM)
 vorige_temperatuur = 0
 vorige_vochtigheid = 0
 vorige_gewicht = 0
-periode = 10
+periode = 1
 gedronken_water = 0
 
 rood = 26
@@ -184,7 +184,15 @@ def get_prog():
     else:
         return jsonify(message='error'), 404
 
-# SOCKET IO
+
+@app.route(endpoint + '/today/warning')
+def get_temp_hum():
+    temp = DataRepository.read_device_today(4)
+    hum = DataRepository.read_device_today(3)
+    if temp is not None and hum is not None:
+        return jsonify(temperatuur=temp, vochtigheid=hum), 200
+    else:
+        return jsonify(message='error'), 404
 
 
 @socketio.on("connect")
@@ -212,6 +220,16 @@ def add_log(msg):
             status = msg['status']
             socketio.emit(
                 'B2F_addlog', {'deviceid': deviceid, 'status': status})
+
+
+@socketio.on("F2B_new_settings")
+def add_settings(msg):
+    global periode
+
+    print(f"received: {msg}")
+    periode = int(msg['Periode']) * 60
+    print(f"Nieuwe periode: {periode}")
+    socketio.emit('B2F_new_settings', {'period': (periode / 60)})
 
 
 def main_code():

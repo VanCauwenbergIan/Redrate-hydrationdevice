@@ -45,24 +45,24 @@
                 </div>
             </header>
             <div class="c-warning js-warning u-bring-to-front--extra u-display-none">
-                <p class="js-warning-content">Looks like it's hot today! Make sure to drink more water! Do you want to be reminded more often?</p>
+                <p><span class="js-warning-content">Looks like it's hot today!</span> Make sure to drink more water! Do you want to be reminded more often?</p>
                 <div class="c-buttons o-layout o-layout--align-content-space-between">
                     <div class="o-layout__item u-1-of-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="15" viewBox="0 0 60 15">
+                        <svg class="js-warning-no" xmlns="http://www.w3.org/2000/svg" width="60" height="15" viewBox="0 0 60 15">
                             <g id="No_button" data-name="No button" transform="translate(1)">
                               <text id="No_thanks" data-name="No thanks" transform="translate(29 12)" fill="#45494d" font-size="12" font-family="Inter-SemiBold, Inter" font-weight="600" text-decoration="underline"><tspan x="-29.42" y="0">No thanks</tspan></text>
                             </g>
                           </svg>                          
                     </div>
                     <div class="o-layout__item u-1-of-2">
-                        <svg id="Yes_button" data-name="Yes button" xmlns="http://www.w3.org/2000/svg" width="56" height="16" viewBox="0 0 56 16">
+                        <svg class="js-warning-yes" id="Yes_button" data-name="Yes button" xmlns="http://www.w3.org/2000/svg" width="56" height="16" viewBox="0 0 56 16">
                             <rect id="Rectangle_94" data-name="Rectangle 94" width="56" height="16" rx="4" fill="#0f5eff"/>
                             <text id="Yes" transform="translate(28 12)" fill="#fff" font-size="12" font-family="Inter-Regular, Inter"><tspan x="-10.159" y="0">Yes</tspan></text>
                         </svg>
                     </div>
                 </div>
             </div>
-            <div class="c-warning-notification js-warning-notification u-display-none">
+            <div class="c-warning-notification js-warning-notification u-bring-to-front--extra u-display-none">
                 <p class="js-notification-message">
                     Notification Period changed to 45min
                 </p>
@@ -93,7 +93,7 @@
                                             <div>Water Drunk</div>
                                         </div>
                                         <div class="c-info-box__bottles o-layout__item u-1-of-2">
-                                            <span class="c-lead c-lead--md js-info-bottles">... </span><span class="c-lead c-lead-xs js-fraction-bottles">...</span>
+                                            <span class="c-lead c-lead--md js-info-bottles">... </span><span class="c-lead c-lead--xs js-fraction-bottles">...</span>
                                             <div>Bottles Left</div>
                                         </div>
                                     </div>
@@ -158,7 +158,7 @@
                     <form class="c-list-settings js-change-settings">
                         <label class="c-list-settings__item c-lead c-lead--md">Period: 
                             <div class="c-list-settings__data">
-                            <input type="number" min="15" max="120" class="js-period">min</input>
+                            <input type="number" min="1" max="120" value="1" class="js-period">min</input>
                             </div>
                         </label>
                         <li class="c-list-settings__item c-lead c-lead--md">
