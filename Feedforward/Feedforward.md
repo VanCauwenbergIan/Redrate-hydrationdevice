@@ -38,38 +38,132 @@ Lector: Geert & Frederik
 
 Vragen voor dit gesprek:
 
-- [X] vraag 1: Wat zou jezelf aanpassen? (bvb. een ander type sensoren)
-- [X] vraag 2: Is het project haalbaar volgens u?
-- [X] vraag 3: Ik dacht erover om ook een mini-luidspreker toe te voegen, is het beter om deze te plaatsen onder nice-to haves (eerst focussen op led strip)?
+- [x] vraag 1: Wat zou jezelf aanpassen? (bvb. een ander type sensoren)
+- [x] vraag 2: Is het project haalbaar volgens u?
+- [x] vraag 3: Ik dacht erover om ook een mini-luidspreker toe te voegen, is het beter om deze te plaatsen onder nice-to haves (eerst focussen op led strip)?
 - [ ] vraag 4: Zou het beter zijn om ook gebruik te maken van een arduino of esp32 idpv enkel een rasp?
 
 Dit is de feedback op mijn vragen.
 
 - feedback
-Voor een gewoon geluidje af te spelen zou een luidspreker geen probleem mogen zijn. Gebruik het veschil in gewicht om ook te bepalen of er een nieuwe fles is opgeplaatst. Ik zou enkel een knop gebruiken om een neiuwe fles zwaardere of lichtere fles aan te geven. 
+  Voor een gewoon geluidje af te spelen zou een luidspreker geen probleem mogen zijn. Gebruik het veschil in gewicht om ook te bepalen of er een nieuwe fles is opgeplaatst. Ik zou enkel een knop gebruiken om een neiuwe fles zwaardere of lichtere fles aan te geven.
 
 Hier komt de feedforward: wat ga ik concreet doen?
 
-- [ ] ToDo 1
-    nadenken over hoe ik de code ga aanpakken, nadenken over het ontwerp
-- [ ] ToDo 2
-    blokschema aanpassen (display en knop)
+- [x] ToDo 1
+      nadenken over hoe ik de code ga aanpakken, nadenken over het ontwerp
+- [x] ToDo 2
+      blokschema aanpassen (display en knop)
 
 ## Gesprek 2 (Datum: dd/mm/yyyy)
 
-Lector:
+niet van toepassing
+
+# Toermoment1 (Datum: 26/05/2021)
+
+Lector: Stijn & Dieter
+
+corrupte sd kaart :(
+
+# Consult 1 (Datum: 27/05/2021)
+
+Lector: Simon
 
 Vragen voor dit gesprek:
 
-- [ ] vraag 1:
-- [ ] vraag 2:
+- [x] vraag 1: Gaat het design de goede richting uit?
 
-Dit is de feedback op mijn vragen.
+- feedback
 
-- feedback 1
-- feedback 2
+  - Andere kleuren nemen (heeft meer weg van de zee of een donker meer dan een glas water)
+  - Zet settings apart, niet onder details
+  - Maak de knop iets opvallender
+  - Begin met het eerst in te kaderen, het design valt moeilijk uit te rekken
 
-Hier komt de feedforward: wat ga ik concreet doen?
+- [x] ToDo 1
+      Nieuw kleurenschema opstellen
+- [x] ToDo 2
+      Settings apart plaatsen onder een icon
+- [x] ToDo 3
+      Knop opvallender maken met icon erbij
 
-- [ ] ToDo 1
+# Consult 2 (Datum: 31/05/2021)
+
+Lector: Pieter-Jan
+
+Vragen voor dit gesprek:
+
+- [x] vraag 1: Zijn gewone breadboard jumpers geschikt om grotere stromen van +- 1A te dragen?
+
+- feedback
+
+  - waarschijnlijk wel, maar als je het veilig wil spelen begin je best met een kleiner stuk. Je kunt altijd later een dikkere kabel aan een ander stuk solderen.
+
+- [x] ToDo 1
+      Test ledstrip maken
 - [ ] ToDo 2
+      Finale versie maken
+
+# Consult 3 (Datum: 01/06/2021)
+
+Lector: Geert
+
+Vragen voor dit gesprek:
+
+- [x] vraag 1: De ledstrip zorgt voor storing op de vochtigheidssensor, hoe los ik dit op?
+
+- feedback
+
+  - massaprobleem
+
+- [x] ToDo 1
+      Ground verstoken
+
+# Tourmoment 2 (Datum: 03/06/2021)
+
+Lector: Dieter & Frederik
+
+Vragen voor dit gesprek:
+
+- [x] vraag 1: De ledstrip zorgt voor storing op de lcd
+
+- feedback
+
+  - geen werkende actuator -> boek consult elektronica
+  - geen behuizing!
+  - site op schema
+
+- [x] ToDo 1
+      Nieuw consult elektronica
+- [x] ToDo 2
+      Behuizing maken (dummy), waarom? origineel te duur en tijdsgebrek
+
+# Consult 4 (Datum: 04/06/2021)
+
+Lector: Geert
+
+Vragen voor dit gesprek:
+
+- [x] vraag 1: De ledstrip zorgt voor storing op de lcd, hoe los ik dit op?
+
+- feedback
+
+  - massaprobleem, maar niet op te lossen vanop afstand
+
+- [x] ToDo 1
+      Nieuw consult boeken
+
+# Consult 5 (Datum: 07/06/2021)
+
+Lector: Geert & Pieter-Jan
+
+Vragen voor dit gesprek:
+
+- [x] vraag 1: De ledstrip zorgt voor storing op de lcd, hoe los ik dit op?
+
+- feedback
+
+  - massaprobleem, enable pin lcd geschakeld met weerstand op 3.3V en GPIO pin (laatste is normaal). Grotere weerstanden op transistoren
+
+- [x] ToDo 1
+      Loadcell toevoegen aan MVP
