@@ -116,20 +116,20 @@ def lcd_write_progress():
 
 
 def led_wit():
-    pwm_rood.ChangeDutyCycle(25)
-    pwm_blauw.ChangeDutyCycle(25)
-    pwm_groen.ChangeDutyCycle(25)
+    pwm_rood.ChangeDutyCycle(100)
+    pwm_blauw.ChangeDutyCycle(100)
+    pwm_groen.ChangeDutyCycle(100)
 
 
 def led_rood():
-    pwm_rood.ChangeDutyCycle(25)
+    pwm_rood.ChangeDutyCycle(100)
     pwm_blauw.ChangeDutyCycle(0)
     pwm_groen.ChangeDutyCycle(0)
 
 
 def led_blauw():
     pwm_rood.ChangeDutyCycle(0)
-    pwm_blauw.ChangeDutyCycle(25)
+    pwm_blauw.ChangeDutyCycle(100)
     pwm_groen.ChangeDutyCycle(0)
 
 

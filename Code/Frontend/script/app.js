@@ -74,8 +74,16 @@ const showSummary = function(jsonObject){
 
     updateSummary(ArrayWeek);
 
+    let innerhtml = ''
     document.querySelector('.js-waterweek').innerHTML = `${totaal.toFixed(4)} l`
     document.querySelector('.js-average').innerHTML = `${(totaal / 7).toFixed(4)} l / day`
+    if (((totaal / 7).toFixed(4)) >= 1.5){
+        innerhtml = 'Keep it up!'
+    }
+    else {
+        innerhtml = 'Try to drink more water!'
+    }
+    document.querySelector('.js-conclussion').innerHTML = innerhtml;
 }
 
 const showDailyProgress = function(jsonObject){

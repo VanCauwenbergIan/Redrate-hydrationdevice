@@ -14,7 +14,6 @@ try:
     # ratio = raw value / weight in g test object 
     # test object has a known weight
     hx.set_scale_ratio(872.5007320644216)
-
     while True:
         print(hx.get_weight_mean(20), 'g')
 

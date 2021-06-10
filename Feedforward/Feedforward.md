@@ -167,3 +167,22 @@ Vragen voor dit gesprek:
 
 - [x] ToDo 1
       Loadcell toevoegen aan MVP
+
+# Tourmoment 3 (Datum: 10/06/2021)
+
+Lector: Dieter & Frederik
+
+- feedback
+
+  - werk de behuizing nog wat verder af
+  - display de humidity en temperatuur op de homepage
+  - foutje fraction
+  - pas settings aan (rephrasen en min hoeveelheid aanpassen)
+  -
+
+- [ ] ToDo 1
+      Settings aanpassen
+- [ ] ToDo 2
+      Behuizing afwerken
+- [ ] ToDo 3
+      Homepage aanpassen
