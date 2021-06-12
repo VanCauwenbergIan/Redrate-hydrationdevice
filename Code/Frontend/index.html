@@ -67,6 +67,18 @@
                     Notification Period changed to 45min
                 </p>
             </div>
+            <div class="c-info-top u-bring-to-front">
+                <div class="c-info-box-top o-layout js-temp-hum u-switch">
+                    <div class="c-info-box__temp  o-layout__item u-1-of-2">
+                        <div class="c-lead c-lead--md js-temperature">...°C</div>
+                        <div>Temperature</div>
+                    </div>
+                    <div class="c-info-box__hum o-layout__item u-1-of-2">
+                        <div class="c-lead c-lead--md js-rhumidity">...%</div>
+                        <div>Relative humidity</div>
+                    </div>
+                </div>
+            </div>
             <section class="o-row">
                 <div class="o-container">
                     <div class="o-layout">
@@ -154,19 +166,28 @@
             </div>
             <div class="c-settings js-settings u-display-none"> 
                 <div class="c-settings-container">
-                    <h2 class="c-titlebar u-background--dark">Notifications</h2>
+                    <h2 class="c-titlebar u-background--dark">Settings</h2>
                     <form class="c-list-settings js-change-settings">
-                        <label class="c-list-settings__item c-lead c-lead--md">Period: 
+                        <label class="c-list-settings__item c-lead c-lead--md">Notifications period: 
                             <div class="c-list-settings__data">
                             <input type="number" min="1" max="120" value="1" class="js-period">min</input>
                             </div>
                         </label>
+                        <label class="c-list-settings__item c-lead c-lead--md">Minimum daily amount:
+                            <select class="c-list-settings__data js-dropdown">
+                                <option value="1.5" selected="selected">1500ml</option>
+                                <option value="1.75">1750ml</option>
+                                <option value="2">2000ml</option>
+                                <option value="2.25">2250ml</option>
+                                <option value="2.5">2500ml</option>
+                            </select>  
+                        </label> 
                         <li class="c-list-settings__item c-lead c-lead--md">
-                            Raspberry pi:
+                            Redrate on/off:
                             <label class="c-list-settings__data switch">
                                 <input type="checkbox" value="on" class="js-mode" checked>
                                 <span class="slider round"></span>
-                              </label>
+                            </label>
                         </li>
                     </form>
                     <div class="c-confirm">

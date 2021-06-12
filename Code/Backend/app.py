@@ -25,6 +25,7 @@ vorige_vochtigheid = 0
 vorige_gewicht = 0
 periode = 10
 progress = 0
+amount = 1.5
 
 rood = 26
 groen = 19
@@ -184,9 +185,11 @@ def get_hum():
 
 @app.route(endpoint + '/today/prog')
 def get_prog():
+    global amount
+
     data = DataRepository.read_device_today_all(2)
     if data is not None:
-        return jsonify(progress=data), 200
+        return jsonify(progress=data, globalamount = amount), 200
     else:
         return jsonify(message='error'), 404
 
@@ -195,19 +198,23 @@ def get_prog():
 
 @app.route(endpoint + '/today/warning')
 def get_temp_hum():
+    global amount
+
     temp = DataRepository.read_device_today(4)
     hum = DataRepository.read_device_today(3)
     if temp is not None and hum is not None:
-        return jsonify(temperatuur=temp, vochtigheid=hum), 200
+        return jsonify(temperatuur=temp, vochtigheid=hum, globalamount=amount), 200
     else:
         return jsonify(message='error'), 404
 
 
 @app.route(endpoint + '/week')
 def get_data_thisweek():
+    global amount
+
     data = DataRepository.read_week()
     if data is not None:
-        return jsonify(week=data), 200
+        return jsonify(week=data, globalamount=amount), 200
     else:
         return jsonify(message='error'), 404
 
@@ -242,22 +249,25 @@ def add_log(msg):
 @socketio.on("F2B_new_settings")
 def add_settings(msg):
     global periode
+    global amount
 
     print(f"received: {msg}")
     periode = int(msg['Periode']) * 60
     status = bool(msg['Mode'])
+    amount = float(msg['DailyAmount'])
     if status == 0:
         call("echo W8w00rd | sudo -S shutdown -h now", shell=True)
     print(f"Nieuwe periode: {periode}")
-    socketio.emit('B2F_new_settings', {'period': (periode / 60)})
+    socketio.emit('B2F_new_settings', {'period': (
+        periode / 60), 'dailyamount': amount})
 
-
-@socketio.on("F2B_request_settings")
+@socketio.on("F2B_get_settings")
 def get_settings():
     global periode
-    if ((periode / 60) >= 1):
-        socketio.emit('B2F_settings', {'period': (periode / 60)})
+    global amount
 
+    socketio.emit('B2F_settings', {'period': (
+        periode / 60), 'dailyamount': amount})
 
 @socketio.on("F2B_progress")
 def check_progress(msg):

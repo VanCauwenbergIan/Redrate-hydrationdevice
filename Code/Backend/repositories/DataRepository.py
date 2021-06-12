@@ -18,7 +18,7 @@ class DataRepository:
 
     @staticmethod
     def read_device_today(deviceid):
-        sql = "SELECT * FROM historiek WHERE deviceid = %s ORDER BY datumtijd DESC LIMIT 1"
+        sql = f"SELECT * FROM historiek WHERE deviceid = {'%s'} ORDER BY datumtijd DESC LIMIT 1"
         params = [deviceid]
         return Database.get_one_row(sql, params)
 

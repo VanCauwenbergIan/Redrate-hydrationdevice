@@ -168,6 +168,19 @@ Vragen voor dit gesprek:
 - [x] ToDo 1
       Loadcell toevoegen aan MVP
 
+# Consult 6 (Datum: 07/06/2021)
+
+Lector: Dieter
+
+Vragen voor dit gesprek:
+
+- [x] vraag 1: Mijn gsm toont de data niet op de website
+
+- feedback
+  - je gsm was waarschijnlijk niet verbonden met het howest IOT netwerk
+- [ ] ToDo 1
+      uittesten op gsm (vindt de howest IOT key niet terug)
+
 # Tourmoment 3 (Datum: 10/06/2021)
 
 Lector: Dieter & Frederik
@@ -178,7 +191,6 @@ Lector: Dieter & Frederik
   - display de humidity en temperatuur op de homepage
   - foutje fraction
   - pas settings aan (rephrasen en min hoeveelheid aanpassen)
-  -
 
 - [ ] ToDo 1
       Settings aanpassen

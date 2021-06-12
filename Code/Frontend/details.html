@@ -55,6 +55,8 @@
               <div class="c-chart o-layout o-la">
                 <div class="o-layout__item u-graf1">
                   <ul class="o-list c-ticks">
+                    <li class="c-tick">3,0l</li>
+                    <li class="c-tick">2,5l</li>
                     <li class="c-tick">2,0l</li>
                     <li class="c-tick">1,5l</li>
                     <li class="c-tick">1,0l</li>
@@ -110,10 +112,10 @@
 
             <ul class="o-list c-list">
               <li class="c-list__item c-lead c-lead--md">
-                Total: <span class="c-list__data c-list__data--center js-waterweek">... l</span>
+                Total: <span class="c-list__data c-list__data--center js-waterweek">... ml</span>
               </li>
               <li class="c-list__subitem c-lead c-lead--sm">
-                Average: <span class="c-list__data c-list__data--center js-average">... l / day</span>
+                Average: <span class="c-list__data c-list__data--center js-average">... ml / day</span>
               </li>
               <li class="c-list__item c-lead c-lead--md">
                   <span class="js-conclussion">no data</span>
@@ -132,7 +134,7 @@
                 Relative humidity: <span class="c-list__data js-rhumidity">...%</span>
               </li>
               <li class="c-list__item c-lead c-lead--md">
-                  Water drunk: <span class="c-list__data js-waterdrunk">0 l / min 1,5l</span>
+                  Water drunk: <span class="c-list__data js-waterdrunk">0 ml / 1500 ml</span>
               </li>
             </ul>
           </div>
@@ -140,19 +142,28 @@
       </section>
       <div class="c-settings js-settings u-display-none"> 
         <div class="c-settings-container">
-            <h2 class="c-titlebar u-background--dark">Notifications</h2>
+            <h2 class="c-titlebar u-background--dark">Settings</h2>
             <form class="c-list-settings js-change-settings">
-                <label class="c-list-settings__item c-lead c-lead--md">Period: 
+                <label class="c-list-settings__item c-lead c-lead--md">Notifications period: 
                     <div class="c-list-settings__data">
                     <input type="number" min="1" max="120" value="1" class="js-period">min</input>
                     </div>
                 </label>
+                <label class="c-list-settings__item c-lead c-lead--md">Minimum daily amount:
+                    <select class="c-list-settings__data js-dropdown js-dropdown">
+                        <option value="1.5" selected="selected">1500ml</option>
+                        <option value="1.75">1750ml</option>
+                        <option value="2">2000ml</option>
+                        <option value="2.25">2250ml</option>
+                        <option value="2.5">2500ml</option>
+                    </select>  
+                </label> 
                 <li class="c-list-settings__item c-lead c-lead--md">
-                    Raspberry pi:
+                    Redrate on/off:
                     <label class="c-list-settings__data switch">
                         <input type="checkbox" value="on" class="js-mode" checked>
                         <span class="slider round"></span>
-                      </label>
+                    </label>
                 </li>
             </form>
             <div class="c-confirm">
@@ -170,6 +181,6 @@
             </div>
         </div>
       </div>
-      </main>
-    </body>
+    </main>
+  </body>
 </html>

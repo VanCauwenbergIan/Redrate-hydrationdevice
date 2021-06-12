@@ -18,11 +18,13 @@ const showHum = function(jsonObject){
 const showWarning = function(jsonObject){
     console.log(jsonObject);
     listenToConditions(jsonObject.temperatuur.gemetenwaarde,jsonObject.vochtigheid.gemetenwaarde)
-    updateMeasurements(Globalprocent);
+    let Globalamount = document.querySelector('.js-dropdown').value;
+    updateMeasurements(Globalprocent, Globalamount);
 }
 
 const showSummary = function(jsonObject){
     console.log(jsonObject);
+    let Globalamount = jsonObject.globalamount;
     let zondag = 0, maandag = 0, dinsdag = 0, woensdag = 0, donderdag = 0, vrijdag = 0, zaterdag = 0;
     let weekObject = jsonObject.week
     let baseline = 0;
@@ -75,9 +77,9 @@ const showSummary = function(jsonObject){
     updateSummary(ArrayWeek);
 
     let innerhtml = ''
-    document.querySelector('.js-waterweek').innerHTML = `${totaal.toFixed(4)} l`
-    document.querySelector('.js-average').innerHTML = `${(totaal / 7).toFixed(4)} l / day`
-    if (((totaal / 7).toFixed(4)) >= 1.5){
+    document.querySelector('.js-waterweek').innerHTML = `${Math.round(totaal * 1000)} ml`
+    document.querySelector('.js-average').innerHTML = `${Math.round(totaal * 1000 / 7)} ml / day`
+    if ((Math.round(totaal / 7)) >= Globalamount){
         innerhtml = 'Keep it up!'
     }
     else {
@@ -87,16 +89,17 @@ const showSummary = function(jsonObject){
 }
 
 const showDailyProgress = function(jsonObject){
+    console.log(jsonObject)
+    let Globalamount = jsonObject.globalamount;
     if (jsonObject.progress.length > 0){
         let progress = 0;
         let baseline = 0;
-        console.log(jsonObject);
+        console.log(jsonObject.progress);
         // console.log(baseline);
         for (let i = 0; i < jsonObject.progress.length; i++){
             let gewicht = jsonObject.progress[i].gemetenwaarde
             if (i == 0){
                 baseline = jsonObject.progress[0].gemetenwaarde
-                console.log(`Nieuwe fles: inhoud ${baseline/1000} l`)
             }
             if (i >= 1){
                 let vorig_gewicht = jsonObject.progress[i - 1].gemetenwaarde
@@ -106,25 +109,25 @@ const showDailyProgress = function(jsonObject){
                 }
                 else{
                     baseline = gewicht
-                    
+                    console.log(`Nieuwe fles: inhoud ${baseline/1000} l`)
                 }
             }
         }
         socket.emit("F2B_progress", { Progress: progress});
-        let progress_in_procent = (progress / 1.5 * 100).toFixed(2);
+        let progress_in_procent = (progress / Globalamount * 100).toFixed(2);
 
         if (htmlDailyProgress){
             htmlDailyProgress.innerHTML = progress_in_procent
             htmlWaterDrunk.innerHTML = progress.toFixed(3) + ' l'
-            if (progress <= 1.5){
-                htmlBottlesWhole.innerHTML = Math.floor((1.5 - progress)/(baseline/1000))
-                htmlBottlesFraction.innerHTML = ` ${fraction(((1.5 - progress)/(baseline/1000) -  Math.floor((1.5 - progress)/(baseline/1000))).toFixed(1))}`
+            if (progress <= Globalamount){
+                htmlBottlesWhole.innerHTML = Math.floor((Globalamount - progress)/(baseline/1000))
+                htmlBottlesFraction.innerHTML = ` ${fraction(((Globalamount - progress)/(baseline/1000) -  Math.floor((Globalamount - progress)/(baseline/1000))).toFixed(1))}`
             }
             else {
                 htmlBottlesWhole.innerHTML = 0;
                 htmlBottlesFraction.innerHTML = 0;
             }
-            updateWaves(progress_in_procent*0.75);
+            updateWaves(progress_in_procent, Globalamount);
 
             if (progress > 2){
                document.querySelector('.js-2liter-message').classList.remove('u-display-none-o');
@@ -134,9 +137,9 @@ const showDailyProgress = function(jsonObject){
             }
         }
         else {
-            let liter = ((progress_in_procent / 100) * 1.5).toFixed(4);
+            let liter = ((progress_in_procent / 100) * Globalamount).toFixed(4);
             console.log(`liter: ${liter}`)
-            innerhtml = `${liter}l / min 1,5l`;
+            innerhtml = `${liter * 1000} ml / ${Globalamount*1000} ml`;
             document.querySelector('.js-waterdrunk').innerHTML = innerhtml;
         }
     }
@@ -145,9 +148,9 @@ const showDailyProgress = function(jsonObject){
 
         htmlDailyProgress.innerHTML = 0;
         htmlWaterDrunk.innerHTML = 0 + ' l';
-        htmlBottlesWhole.innerHTML = 1.5/(baseline/1000);
+        htmlBottlesWhole.innerHTML = Globalamount/(baseline/1000);
     
-        updateWaves(0);
+        updateWaves(0, Globalamount);
     }
 }
 
@@ -187,16 +190,12 @@ const listenToSocket = function(){
         if (jsonObject.deviceid == 4){
             console.log(`Nieuwe temperatuur: ${jsonObject.gemetenwaarde}°C`);
             temp = jsonObject.gemetenwaarde;
-            if (htmlTemperatuur){
-                updateTemperatuur(temp);
-            } 
+            updateTemperatuur(temp);
         }
         else if (jsonObject.deviceid == 3){
             console.log(`Nieuwe relatieve luchtvochtigheid: ${jsonObject.gemetenwaarde}%`);
             rv = jsonObject.gemetenwaarde
-            if (htmlVochtigheid){
-                updateVochtigheid(rv);
-            }
+            updateVochtigheid(rv);
         }
         else if (jsonObject.deviceid == 2){
             console.log(`Nieuwe waarde fles: ${jsonObject.gemetenwaarde}`);
@@ -207,15 +206,16 @@ const listenToSocket = function(){
         listenToConditions(temp, rv)
     })
     socket.on("B2F_new_settings", function (jsonObject){
-        console.log(`Nieuwe settings bevestigd: ${jsonObject.period}`)
         if (htmlDailyProgress){
             document.querySelector('.js-notification-message').innerHTML = `Notification period changed to ${jsonObject.period}min`;
             htmlNotification.classList.remove("u-display-none")
             setTimeout (function(){
                 htmlNotification.classList.add("u-display-none")
+                updateMeasurements(Globalprocent, jsonObject.dailyamount)
             }, 5000);
         }
         document.querySelector('.js-period').value = jsonObject.period
+        document.querySelector('.js-dropdown').value = jsonObject.dailyamount
     })
 }
 
@@ -247,13 +247,16 @@ const listenToClickConfirm = function(){
 
         console.log("Nieuwe settings")
         let Periode = document.querySelector('.js-period').value;
+        let amount = document.querySelector('.js-dropdown').value;
         
         htmlSettings.classList.add("u-display-none");
 
-        socket.emit("F2B_new_settings", { Periode: Periode, Mode: status });
+        socket.emit("F2B_new_settings", { Periode: Periode, DailyAmount: amount , Mode: status });
+
+        getDailyProgress();
 
         if (htmlDailyProgress){
-            updateMeasurements(Globalprocent);
+            updateMeasurements(Globalprocent, amount);
         }
     })
 }
@@ -264,7 +267,8 @@ const listenToClickWarningYes = function(){
         htmlWarning.classList.add('u-display-none')
         htmlSettings.classList.remove("u-display-none");
         RemoveSettings();
-        updateMeasurements(Globalprocent);
+        let Globalamount = document.querySelector('.js-dropdown').value;
+        updateMeasurements(Globalprocent , Globalamount);
     })
 }
 
@@ -272,7 +276,8 @@ const listenToClickWarningNo = function(){
     const button = document.querySelector('.js-warning-no');
     button.addEventListener("click", function(){
         htmlWarning.classList.add('u-display-none');
-        updateMeasurements(Globalprocent);
+        let Globalamount = document.querySelector('.js-dropdown').value;
+        updateMeasurements(Globalprocent, Globalamount);
     })
 }
 
@@ -308,117 +313,328 @@ const updateVochtigheid = function(vochtigheid){
     htmlVochtigheid.innerHTML = `${vochtigheid}%`
 }
 
-const updateWaves = function(procent){
+const updateWaves = function(procent, dailyamount){
+    if (dailyamount <= 1.75){
+        procent =  Math.round(((procent / 100 /2) * dailyamount) * 100)
+    }
+    else {
+        procent =  Math.round(((procent / 100 /3) * dailyamount) * 100) 
+    }
     Globalprocent = procent; // bijgemaakt voor warning (anders is bij een translateY van 0% het logo enzv. niet zichtbaar)
    if (procent <= 100){
         htmlWaves.style.transform = `translateY(${100 - procent}%)`;
-        updateMeasurements(procent);
+        updateMeasurements(procent, dailyamount);
    }
    else{
         htmlWaves.style.transform = `translateY(${0}%)`;
-        updateMeasurements(100);
+        updateMeasurements(100, dailyamount);
    }
 }
 
-const updateMeasurements = function(procent){
+const updateMeasurements = function(procent, dailyamount){
     let innerhtml = ''
-    if (procent < 12.5){
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure u-switch">1750ml</li>
-        <li class="c-measure u-switch">1500ml</li>
-        <li class="c-measure u-switch">1250ml</li>
-        <li class="c-measure u-switch">1000ml</li>
-        <li class="c-measure u-switch">750ml</li>
-        <li class="c-measure u-switch">500ml</li>
-        <li class="c-measure u-switch">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`
-    }
-    else if (procent < 25){
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure u-switch">1750ml</li>
-        <li class="c-measure u-switch">1500ml</li>
-        <li class="c-measure u-switch">1250ml</li>
-        <li class="c-measure u-switch">1000ml</li>
-        <li class="c-measure u-switch">750ml</li>
-        <li class="c-measure u-switch">500ml</li>
-        <li class="c-measure">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`
-    }
-    else if (procent < 37.5){
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure u-switch">1750ml</li>
-        <li class="c-measure u-switch">1500ml</li>
-        <li class="c-measure u-switch">1250ml</li>
-        <li class="c-measure u-switch">1000ml</li>
-        <li class="c-measure u-switch">750ml</li>
-        <li class="c-measure">500ml</li>
-        <li class="c-measure">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`
-    }
-    else if (procent < 50){
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure u-switch">1750ml</li>
-        <li class="c-measure u-switch">1500ml</li>
-        <li class="c-measure u-switch">1250ml</li>
-        <li class="c-measure u-switch">1000ml</li>
-        <li class="c-measure">750ml</li>
-        <li class="c-measure">500ml</li>
-        <li class="c-measure">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`
-    }
-    else if (procent < 62.5){
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure u-switch">1750ml</li>
-        <li class="c-measure u-switch">1500ml</li>
-        <li class="c-measure u-switch">1250ml</li>
-        <li class="c-measure">1000ml</li>
-        <li class="c-measure">750ml</li>
-        <li class="c-measure">500ml</li>
-        <li class="c-measure">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`
-    }
-    else if (procent < 75){
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure u-switch">1750ml</li>
-        <li class="c-measure u-switch">1500ml</li>
-        <li class="c-measure">1250ml</li>
-        <li class="c-measure">1000ml</li>
-        <li class="c-measure">750ml</li>
-        <li class="c-measure">500ml</li>
-        <li class="c-measure">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`
-    }
-    else if (procent < 87.5){
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure u-switch">1750ml</li>
-        <li class="c-measure">1500ml</li>
-        <li class="c-measure">1250ml</li>
-        <li class="c-measure">1000ml</li>
-        <li class="c-measure">750ml</li>
-        <li class="c-measure">500ml</li>
-        <li class="c-measure">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`
+
+    if (dailyamount <= 1.75){
+        if (procent < 12.5){
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure u-switch">750ml</li>
+            <li class="c-measure u-switch">500ml</li>
+            <li class="c-measure u-switch">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 25){
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure u-switch">750ml</li>
+            <li class="c-measure u-switch">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 37.5){
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure u-switch">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 50){
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 62.5){
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 75){
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 87.5){
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else {
+            innerhtml = `
+            <li class="c-measure" style="opacity: 0;" >2000ml</li>
+            <li class="c-measure">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`     
+        }
+        htmlMeasurements.innerHTML = innerhtml
     }
     else {
-        innerhtml = `
-        <li class="c-measure" style="opacity: 0;" >2000ml</li>
-        <li class="c-measure">1750ml</li>
-        <li class="c-measure">1500ml</li>
-        <li class="c-measure">1250ml</li>
-        <li class="c-measure">1000ml</li>
-        <li class="c-measure">750ml</li>
-        <li class="c-measure">500ml</li>
-        <li class="c-measure">250ml</li>
-        <li class="c-measure" style="opacity: 0;">0ml</li>`     
+        if (procent < 8){
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure u-switch">750ml</li>
+            <li class="c-measure u-switch">500ml</li>
+            <li class="c-measure u-switch">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 16.5){
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure u-switch">750ml</li>
+            <li class="c-measure u-switch">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 25){
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure u-switch">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 33){
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure u-switch">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 41.5){
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure u-switch">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 50){
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure u-switch">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 58){
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure u-switch">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 66.5) {
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure u-switch" >2000ml</li>
+            <li class="c-measure">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 75) {
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure u-switch" >2250ml</li>
+            <li class="c-measure" >2000ml</li>
+            <li class="c-measure">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 83) {
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure u-switch" >2500ml</li>
+            <li class="c-measure" >2250ml</li>
+            <li class="c-measure" >2000ml</li>
+            <li class="c-measure">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else if (procent < 91.5) {
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure u-switch" >2750ml</li>
+            <li class="c-measure" >2500ml</li>
+            <li class="c-measure" >2250ml</li>
+            <li class="c-measure" >2000ml</li>
+            <li class="c-measure">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        else {
+            innerhtml = `
+            <li class="c-measure u-switch" style="opacity: 0;">3000ml</li>
+            <li class="c-measure" >2750ml</li>
+            <li class="c-measure" >2500ml</li>
+            <li class="c-measure" >2250ml</li>
+            <li class="c-measure" >2000ml</li>
+            <li class="c-measure">1750ml</li>
+            <li class="c-measure">1500ml</li>
+            <li class="c-measure">1250ml</li>
+            <li class="c-measure">1000ml</li>
+            <li class="c-measure">750ml</li>
+            <li class="c-measure">500ml</li>
+            <li class="c-measure">250ml</li>
+            <li class="c-measure" style="opacity: 0;">0ml</li>`
+        }
+        htmlMeasurements.innerHTML = innerhtml 
     }
-    htmlMeasurements.innerHTML = innerhtml
+
+    if (procent < 91.5){
+        document.querySelector('.js-temp-hum').classList.add('u-switch')      
+    }
+    else {
+        document.querySelector('.js-temp-hum').classList.remove('u-switch')
+    }
 
     if (procent < 62.5 ){
         htmlSwitchProgress.classList.add('u-switch')
@@ -486,19 +702,12 @@ const updateMeasurements = function(procent){
     DisplaySettings();
 }
 
-const updatePeriod = function(){
-    socket.emit("F2B_request_settings");
-    socket.on("B2F_settings", function (jsonObject){
-        document.querySelector('.js-period').value = jsonObject.period
-    })
-    
-}
 
 const updateSummary = function(week){
-    console.log(week)
+    console.log(week);
     for (let i = 0; i < week.length; i++){
-        if (week[i] <= 1.5){
-            week[i] = Math.round(week[i] / 1.5 * 100);
+        if (week[i] <= 3){
+            week[i] = Math.round(week[i] / 3 * 100);
         }
         else {
             week[i] = 100;
@@ -547,6 +756,17 @@ const updateSummary = function(week){
 
 }
 
+
+const updatePeriod = function(){
+    socket.emit("F2B_get_settings")
+    socket.on("B2F_settings", function (jsonObject){
+        console.log(jsonObject)
+        document.querySelector('.js-period').value = jsonObject.period;
+        document.querySelector('.js-dropdown').value = jsonObject.dailyamount;
+        getDailyProgress();
+    })
+}
+
 const fraction = function(getal) {
     let fraction = getal - Math.floor(getal);
     let pre = Math.pow(10, /\d*$/.exec(new String(getal))[0].length);
@@ -559,11 +779,16 @@ const fraction = function(getal) {
     var noemer = pre / ggd;
     var teller = Math.round(fraction * pre) / ggd;
   
-    return teller + "/" + noemer;
+    if (teller > 0){
+        return teller + "/" + noemer;
+    }
+    else {
+        return 0;
+    }
   }
 
 const lightBar = function(procent) {
-    if (procent < 75){
+    if (procent < 50){
         return 'bar--light'
     }
     else {
@@ -587,11 +812,16 @@ const init = function () {
     htmlWarning = document.querySelector('.js-warning');
     htmlNotification = document.querySelector('.js-warning-notification');
 
-    if (htmlTemperatuur){
-        getTemp();
-        getHum();
+    updatePeriod();
+
+
+    getTemp();
+    getHum();
+
+    if(!htmlDailyProgress){
         getSummary();
     }
+
 
     if(htmlDailyProgress){
         getWarning();
@@ -599,10 +829,8 @@ const init = function () {
 
     getDailyProgress();
 
-    updatePeriod();
     listenToSocket();
     listenToClickConfirm();
     DisplaySettings();
 }
-
 document.addEventListener('DOMContentLoaded', init);

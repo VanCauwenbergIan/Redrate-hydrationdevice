@@ -669,3 +669,4 @@ class HX711:
 # huge thanks to gandalf15
 # ik krijg mijn klasse niet werkende
 # de repo vind je hier: https://github.com/gandalf15/HX711
+# ik heb het zelf geprobeerd mer het calibreren lukte niet

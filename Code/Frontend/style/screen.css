@@ -564,7 +564,7 @@ li.c-list__subitem + li.c-list__item {
 
 .c-tick + .c-tick {
   padding: 0;
-  margin-top: 36px;
+  margin-top: 19px;
 }
 
 .day {
@@ -626,14 +626,15 @@ li.c-list__subitem + li.c-list__item {
   color: #fff;
   text-align: center;
   margin: auto;
-  margin-top: 20vh;
+  margin-top: 10vh;
 }
 
 .c-percentage {
   margin: 0;
 }
 
-.c-info {
+.c-info,
+.c-info-top {
   position: relative;
   text-align: center;
 }
@@ -649,8 +650,20 @@ li.c-list__subitem + li.c-list__item {
   background: rgba(22, 24, 26, 0.3);
 }
 
+.c-info-box-top {
+  color: #fff;
+  font-size: 11px;
+  line-height: 13px;
+  width: 184px;
+  height: 64px;
+  margin: auto;
+  margin-top: 0;
+}
+
 .c-info-box__waterdrunk,
-.c-info-box__bottles {
+.c-info-box__bottles,
+.c-info-box__temp,
+.c-info-box__hum {
   margin-top: auto;
   margin-bottom: 16px;
 }
@@ -691,7 +704,7 @@ li.c-list__subitem + li.c-list__item {
 
 @media (min-height: 648px) {
   .c-dailyintake {
-    margin-top: 25vh;
+    margin-top: 15vh;
   }
   .c-info-box {
     margin-top: 12vh;
@@ -700,7 +713,7 @@ li.c-list__subitem + li.c-list__item {
 
 @media (min-height: 720px) {
   .c-dailyintake {
-    margin-top: 28vh;
+    margin-top: 20vh;
   }
   .c-info-box {
     margin-top: 14vh;
@@ -709,7 +722,7 @@ li.c-list__subitem + li.c-list__item {
 
 @media (min-height: 900px) {
   .c-dailyintake {
-    margin-top: 30vh;
+    margin-top: 24vh;
   }
   .c-info-box {
     margin-top: 18vh;
@@ -812,7 +825,7 @@ li.c-list__subitem + li.c-list__item {
 .c-settings-container {
   position: relative;
   margin: auto;
-  margin-top: 35vh;
+  margin-top: 30vh;
   max-width: 91vw;
   width: 100%;
   z-index: 60;
@@ -852,7 +865,8 @@ li.c-list__subitem + li.c-list__item {
   font-weight: 600;
 }
 
-.js-period {
+.js-period,
+.js-dropdown {
   font-size: 14px;
   color: #0e3e9d;
   font-weight: 600;
