@@ -19,15 +19,18 @@ class LCDRepositoryI2C:
         GPIO.setup(self.rs_pin, GPIO.OUT)
         GPIO.output(self.e_pin, GPIO.HIGH)
 
+    # write a message to a single line
     def write_message(self, message):
         for letter in message:
             ascii_letter = ord(letter)
             self.send_character(ascii_letter)
             time.sleep(0.1)
 
+    # turn the cursor on
     def cursor_on(self):
         self.send_instruction(0x0E)
 
+    # set the charachters to bytes readable by the display
     def set_data_bits(self, value):
         mask = 0x1
         byte = 0b00000000
@@ -39,6 +42,7 @@ class LCDRepositoryI2C:
             mask = mask << 1
         i2c.write_byte(0x38, byte)
 
+    # send an instruction, for the required values lookup the values online or consult the documentation
     def send_instruction(self, value):
         GPIO.output(self.rs_pin, GPIO.LOW)
         self.set_data_bits(value)
@@ -46,6 +50,7 @@ class LCDRepositoryI2C:
         GPIO.output(self.e_pin, GPIO.HIGH)
         time.sleep(0.01)
 
+    # send a single charachter
     def send_character(self, value):
         GPIO.output(self.rs_pin, GPIO.HIGH)
         self.set_data_bits(value)
@@ -53,15 +58,17 @@ class LCDRepositoryI2C:
         GPIO.output(self.e_pin, GPIO.HIGH)
         time.sleep(0.01)
 
+    # configure the LCD so it's clear and ready for use
     def init_lcd(self):
         self.send_instruction(0x38)
         self.send_instruction(0x0f)
         self.send_instruction(0x01)
 
+    # set the cursor to the second line
     def new_line(self):
         self.send_instruction(0xC0)
 
-    # old, there's auto_scroll now
+    # test function
     def auto_line(self, message):
         length = 0
         for letter in message:
@@ -72,6 +79,7 @@ class LCDRepositoryI2C:
                 self.new_line()
             time.sleep(0.1)
 
+    # test function
     def auto_scroll(self, message):
         length = 0
         for letter in message:
@@ -94,7 +102,7 @@ class LCDRepositoryI2C:
     def clear_screen(self):
         self.send_instruction(0x01)
 
-
+# test code
 def main():
     try:
         lcd = LCDRepositoryI2C()

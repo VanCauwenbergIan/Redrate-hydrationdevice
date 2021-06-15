@@ -12,6 +12,7 @@ class SpiRepository:
         spi.open(bus, device)
         spi.max_speed_hz = 10 ** 5
 
+    # reads the channel given of the MCP3008
     def read_channel(self, channel):
         mask = 0x8
         channel = (mask | channel) << 4

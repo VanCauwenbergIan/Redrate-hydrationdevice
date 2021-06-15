@@ -1,20 +1,25 @@
+// open up the socket to communicate with the backend
 const lanIP = `${window.location.hostname}:5000`;
 const socket = io(`http://${lanIP}`);
 
+// declaration of used variables
 let htmlTemperatuur, htmlVochtigheid, htmlDailyProgress, htmlWaterDrunk, htmlBottlesWhole, htmlBottlesFraction, htmlSwitchProgress, htmlSwitchInfo, htmlWarning, htmlNotification, Globalprocent;
 
 // callback-visualisation -show
 
+// display the current temperature 
 const showTemp = function(jsonObject){
     console.log(jsonObject);
     updateTemperatuur(jsonObject.temperatuur.gemetenwaarde);
 }
 
+// display the current humidity
 const showHum = function(jsonObject){
     console.log(jsonObject);
     updateVochtigheid(jsonObject.vochtigheid.gemetenwaarde);
 }
 
+// handles the warning on top of the page
 const showWarning = function(jsonObject){
     console.log(jsonObject);
     listenToConditions(jsonObject.temperatuur.gemetenwaarde,jsonObject.vochtigheid.gemetenwaarde)
@@ -22,14 +27,17 @@ const showWarning = function(jsonObject){
     updateMeasurements(Globalprocent, Globalamount);
 }
 
+// handles the graph on the second page
 const showSummary = function(jsonObject){
     console.log(jsonObject);
     let Globalamount = jsonObject.globalamount;
+    // a variable for everyday of the week
     let zondag = 0, maandag = 0, dinsdag = 0, woensdag = 0, donderdag = 0, vrijdag = 0, zaterdag = 0;
     let weekObject = jsonObject.week
     let baseline = 0;
     for (let i = 0; i < weekObject.length; i++){
         let gewicht = weekObject[i].gemetenwaarde
+        // the value is a baseline and not part of the values that have an effect on the amount of water drunk
         if (i == 0){
             baseline = weekObject[0].gemetenwaarde
             console.log(`Nieuwe fles: inhoud ${baseline/1000} l`)
@@ -37,10 +45,10 @@ const showSummary = function(jsonObject){
         if (i >= 1){
             let vorig_gewicht = weekObject[i - 1].gemetenwaarde
             if (gewicht < vorig_gewicht){
-                let verschil = (vorig_gewicht - gewicht)/1000;
+                let verschil = (vorig_gewicht - gewicht)/1000; // calculate the amount of water drunk compared to last time
                 let dag = weekObject[i].dag
                 if (dag == 1){
-                    zondag += verschil
+                    zondag += verschil // a week in MySQL starts on Sunday -> Sunday == 1, Saturday == 7 ! The amount of water drunk gets assigned to a day based on this number (see structure json in console site)
                 }
                 else if (dag == 2){
                     maandag += verschil
@@ -62,20 +70,22 @@ const showSummary = function(jsonObject){
                 }
             }
             else{
-                baseline = gewicht                
+                baseline = gewicht  // new value equals or is bigger than the last one, which means the user refilled the bottle or didn't drink. This is a new baseline and doesn't count toward the total progress.             
             }
         }
     }
-    let ArrayWeek = [maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag];
+    let ArrayWeek = [maandag, dinsdag, woensdag, donderdag, vrijdag, zaterdag, zondag]; // list of values for each day of the week
     console.log(`Week verwerkt: ${ArrayWeek}`)
 
     let totaal = 0;
     for (let i = 0; i < ArrayWeek.length; i++){
-        totaal += ArrayWeek[i];
+        totaal += ArrayWeek[i]; // combine them all to show a total beneath the graph
     }
 
+    // update graph with list for week
     updateSummary(ArrayWeek);
 
+    // change the total and average for this week
     let innerhtml = ''
     document.querySelector('.js-waterweek').innerHTML = `${Math.round(totaal * 1000)} ml`
     document.querySelector('.js-average').innerHTML = `${Math.round(totaal * 1000 / 7)} ml / day`
@@ -88,14 +98,15 @@ const showSummary = function(jsonObject){
     document.querySelector('.js-conclussion').innerHTML = innerhtml;
 }
 
+// update the current progress
 const showDailyProgress = function(jsonObject){
     console.log(jsonObject)
-    let Globalamount = jsonObject.globalamount;
+    let Globalamount = jsonObject.globalamount; // how much you need to drink in a day
     if (jsonObject.progress.length > 0){
         let progress = 0;
         let baseline = 0;
         console.log(jsonObject.progress);
-        // console.log(baseline);
+        // mostly the same for a week, but only a single day and in l
         for (let i = 0; i < jsonObject.progress.length; i++){
             let gewicht = jsonObject.progress[i].gemetenwaarde
             if (i == 0){
@@ -113,10 +124,12 @@ const showDailyProgress = function(jsonObject){
                 }
             }
         }
-        progress 
+        // send progress to backend
         socket.emit("F2B_progress", { Progress: progress});
+        // convert progress to a percentage based on the daily goal
         let progress_in_procent = (progress / Globalamount * 100).toFixed(2);
 
+        // if on homepage, update the amount of water dunk and bottles still left
         if (htmlDailyProgress){
             htmlDailyProgress.innerHTML = progress_in_procent
             htmlWaterDrunk.innerHTML = progress.toFixed(3) + ' l'
@@ -128,8 +141,10 @@ const showDailyProgress = function(jsonObject){
                 htmlBottlesWhole.innerHTML = 0;
                 htmlBottlesFraction.innerHTML = 0;
             }
+            // update the waves on the background 
             updateWaves(progress_in_procent, Globalamount);
 
+            // display a message if the user has drunk more than 2l
             if (progress > 2){
                document.querySelector('.js-2liter-message').classList.remove('u-display-none-o');
             }
@@ -137,6 +152,7 @@ const showDailyProgress = function(jsonObject){
                 document.querySelector('.js-2liter-message').classList.add('u-display-none-o');
             }
         }
+        // not on homepage, only update the mount of water drunk
         else {
             let liter = ((progress_in_procent / 100) * Globalamount).toFixed(4);
             console.log(`liter: ${liter}`)
@@ -145,6 +161,7 @@ const showDailyProgress = function(jsonObject){
         }
     }
     else {
+        // no progress yet, set evrything to 0/default
         let baseline = 500;
 
         htmlDailyProgress.innerHTML = 0;
@@ -155,28 +172,34 @@ const showDailyProgress = function(jsonObject){
     }
 }
 
+// print new settings in console
 const callBackSettings = function(jsonObject){
     console.log(jsonObject);
 }
 
 // data access -get
 
+// get value temperature from backend
 const getTemp = function(){
     handleData(`http://192.168.168.168:5000/api/v1/today/temp`, showTemp);
 }
 
+// get value humidity from backend
 const getHum = function(){
     handleData(`http://192.168.168.168:5000/api/v1/today/hum`, showHum); 
 }
 
+// get value everything needed for the warning from backend
 const getWarning = function(){
     handleData(`http://192.168.168.168:5000/api/v1/today/warning`, showWarning); 
 }
 
+// get progress today from backend
 const getDailyProgress = function(){
     handleData(`http://192.168.168.168:5000/api/v1/today/prog`, showDailyProgress);
 }
 
+// get progress week from backend
 const getSummary = function(){
     handleData(`http://192.168.168.168:5000/api/v1/week`, showSummary);
 }
@@ -184,28 +207,34 @@ const getSummary = function(){
 // socket listeners
 
 const listenToSocket = function(){
+    // if a log is added to the database the frontend will receive a message from the backend and should update the values
     socket.on("B2F_addlog", function (jsonObject){
         let temp = 0;
         let rv = 0;
         console.log(`boodschap server: aangepaste waarde of status`);
+        //  new log was from the temperature sensor
         if (jsonObject.deviceid == 4){
             console.log(`Nieuwe temperatuur: ${jsonObject.gemetenwaarde}°C`);
             temp = jsonObject.gemetenwaarde;
             updateTemperatuur(temp);
         }
+        //  new log was from the humdity sensor
         else if (jsonObject.deviceid == 3){
             console.log(`Nieuwe relatieve luchtvochtigheid: ${jsonObject.gemetenwaarde}%`);
             rv = jsonObject.gemetenwaarde
             updateVochtigheid(rv);
         }
+        //  new log was from the weight sensor
         else if (jsonObject.deviceid == 2){
             console.log(`Nieuwe waarde fles: ${jsonObject.gemetenwaarde}`);
             if (htmlDailyProgress){
                 getDailyProgress();
             }
         }
+        //  check if the temperature isn't too high or humidity too low, otherwise display the warning.
         listenToConditions(temp, rv)
     })
+    // settings confirmed by the Pi, update the fields in the settings to the new ones and show a conformation message for 5s
     socket.on("B2F_new_settings", function (jsonObject){
         if (htmlDailyProgress){
             document.querySelector('.js-notification-message').innerHTML = `Notification period changed to ${jsonObject.period}min, Daily amount changed to ${jsonObject.dailyamount}l`;
@@ -222,6 +251,7 @@ const listenToSocket = function(){
     })
 }
 
+// when the settings icon is clicked, display the settings overlay
 const DisplaySettings = function(){
     const button = document.querySelector('.js-settings-button');
     button.addEventListener("click", function(){
@@ -230,6 +260,7 @@ const DisplaySettings = function(){
     RemoveSettings();
 }
 
+// when the cancel button is clicked remove the settings overlay
 const RemoveSettings = function(){
     const button = document.querySelector('.js-cancel')
     button.addEventListener("click", function(){
@@ -237,44 +268,52 @@ const RemoveSettings = function(){
     })
 }
 
+// when the confirm button is clicked send the values to the Pi and remove the settings overlay 
 const listenToClickConfirm = function(){
     const button = document.querySelector('.js-confirm');
     button.addEventListener("click", function(){
-        let status = document.querySelector('.js-mode').checked
+        let status = document.querySelector('.js-mode').checked // Check if the powerswitch for the Pi is on or off
         if (status == true){
           status = 1;
         }
         else{
-          status = 0;
+          status = 0; 
         }
 
+        // read new settings from input fields
         console.log("Nieuwe settings")
         let Periode = document.querySelector('.js-period').value;
         let amount = document.querySelector('.js-dropdown').value;
         
+        // remove the settings overlay
         htmlSettings.classList.add("u-display-none");
 
+        // send them to the backend
         socket.emit("F2B_new_settings", { Periode: Periode, DailyAmount: amount , Mode: status });
 
+        // update the drunk amount (because the daily goal might've changed and in that case also the percentage)
         getDailyProgress();
 
         if (htmlDailyProgress){
+            // there are 2 sets of measuremenst: 2l and 3l which change depending on the daily goal, so update those too
             updateMeasurements(Globalprocent, amount);
         }
     })
 }
 
+// the user clicked yes and wants to change the settings, remove the warning and show the settings 
 const listenToClickWarningYes = function(){
     const button = document.querySelector('.js-warning-yes');
     button.addEventListener("click", function(){
         htmlWarning.classList.add('u-display-none')
         htmlSettings.classList.remove("u-display-none");
-        RemoveSettings();
+        RemoveSettings(); // listen for a confirm or cancel press
         let Globalamount = document.querySelector('.js-dropdown').value;
         updateMeasurements(Globalprocent , Globalamount);
     })
 }
 
+// the user doesn't want to change the settings
 const listenToClickWarningNo = function(){
     const button = document.querySelector('.js-warning-no');
     button.addEventListener("click", function(){
@@ -284,6 +323,7 @@ const listenToClickWarningNo = function(){
     })
 }
 
+// it is either hot ( temp >= 25°C) and / or dry ( rh <= 30  %), display a prompt asking if the user wants to change the settings. Otherwise don't
 const listenToConditions = function(temperatuur, rvocht){
     if (htmlDailyProgress){
         if (temperatuur >= 25 && rvocht <= 30){
@@ -301,6 +341,7 @@ const listenToConditions = function(temperatuur, rvocht){
         else {
             htmlWarning.classList.add('u-display-none')
         }
+        // listen to the buttons of the prompt
         listenToClickWarningYes();
         listenToClickWarningNo();
     }
@@ -308,6 +349,7 @@ const listenToConditions = function(temperatuur, rvocht){
 
 // functies voor socket listeners
 
+// update values
 const updateTemperatuur = function(temperatuur){
     htmlTemperatuur.innerHTML = `${temperatuur}°C`;
 }
@@ -316,27 +358,32 @@ const updateVochtigheid = function(vochtigheid){
     htmlVochtigheid.innerHTML = `${vochtigheid}%`
 }
 
+// update the waves on the background
 const updateWaves = function(procent, dailyamount){
     if (dailyamount <= 1.75){
-        procent =  Math.round(((procent / 100 /2) * dailyamount) * 100)
+        procent =  Math.round(((procent / 100 /2) * dailyamount) * 100) // daily goal below 2l -> 2l measurement set
     }
     else {
-        procent =  Math.round(((procent / 100 /3) * dailyamount) * 100) 
+        procent =  Math.round(((procent / 100 /3) * dailyamount) * 100) // daily goal equal to or above 2l -> 3l measurement set
     }
-    Globalprocent = procent; // bijgemaakt voor warning (anders is bij een translateY van 0% het logo enzv. niet zichtbaar)
+    Globalprocent = procent; // variable for warning / prompt
    if (procent <= 100){
+       // value is within bounds move the waves up or down
         htmlWaves.style.transform = `translateY(${100 - procent}%)`;
         updateMeasurements(procent, dailyamount);
    }
    else{
+       // value is larger than 100% and would cause the waves to move out of bounds! use 100% instead
         htmlWaves.style.transform = `translateY(${0}%)`;
         updateMeasurements(100, dailyamount);
    }
 }
 
+// change the color of the text and measurements depending on the progress made (waves)
 const updateMeasurements = function(procent, dailyamount){
     let innerhtml = ''
 
+    // 2l measurement set
     if (dailyamount <= 1.75){
         if (procent < 12.5){
             innerhtml = `
@@ -436,6 +483,7 @@ const updateMeasurements = function(procent, dailyamount){
         }
         htmlMeasurements.innerHTML = innerhtml
     }
+    // 3l measurement set
     else {
         if (procent < 8){
             innerhtml = `
@@ -632,6 +680,7 @@ const updateMeasurements = function(procent, dailyamount){
         htmlMeasurements.innerHTML = innerhtml 
     }
 
+    // change the color of temperature and humidity on top of the page treshold is reached
     if (procent < 91.5){
         document.querySelector('.js-temp-hum').classList.add('u-switch')      
     }
@@ -639,6 +688,7 @@ const updateMeasurements = function(procent, dailyamount){
         document.querySelector('.js-temp-hum').classList.remove('u-switch')
     }
 
+    // change the color of the percentage indicator when a treshold is reached
     if (procent < 62.5 ){
         htmlSwitchProgress.classList.add('u-switch')
     }
@@ -646,6 +696,7 @@ const updateMeasurements = function(procent, dailyamount){
         htmlSwitchProgress.classList.remove('u-switch')
     }
 
+    // change the color of info at the bottom of the page
     if (procent < 25){
         htmlSwitchInfo.classList.add('u-switch')
     }
@@ -653,6 +704,7 @@ const updateMeasurements = function(procent, dailyamount){
         htmlSwitchInfo.classList.remove('u-switch')
     }
 
+    // code for switching the color of the navigation when the page is basically filled up with the blue waves
     if (procent >= 98 && htmlNotification.classList.contains("u-display-none") == 1 && htmlWarning.classList.contains("u-display-none") == 1){
         document.querySelector('.js-header').innerHTML =`
         <div class="c-nav">
@@ -678,6 +730,7 @@ const updateMeasurements = function(procent, dailyamount){
         `
 
     }
+    // else use the regular black logo and button
     else{
         document.querySelector('.js-header').innerHTML =`
         <div class="c-nav">
@@ -705,7 +758,7 @@ const updateMeasurements = function(procent, dailyamount){
     DisplaySettings();
 }
 
-
+// use the values for each day of the week to change the graph
 const updateSummary = function(week){
     console.log(week);
     for (let i = 0; i < week.length; i++){
@@ -716,6 +769,7 @@ const updateSummary = function(week){
             week[i] = 100;
         }
     }
+    //lightBar changes the color of the bar in the barchart when you drunk less than 1.5l that day
     document.querySelector('.js-chart').innerHTML = `
     <tr>
     <td>
@@ -759,7 +813,7 @@ const updateSummary = function(week){
 
 }
 
-
+// get the values for the setting when the page is refreshed
 const updatePeriod = function(){
     socket.emit("F2B_get_settings")
     socket.on("B2F_settings", function (jsonObject){
@@ -772,6 +826,7 @@ const updatePeriod = function(){
     })
 }
 
+// convert a float to a fraction
 const fraction = function(getal) {
     let fraction = getal - Math.floor(getal);
     let pre = Math.pow(10, /\d*$/.exec(new String(getal))[0].length);
@@ -801,8 +856,10 @@ const lightBar = function(procent) {
     }
 }
 
+// main code
 const init = function () {
     console.log('DOM content loaded');
+    // selecting the HTML element with the right class for each variable.
     htmlTemperatuur = document.querySelector('.js-temperature');
     htmlVochtigheid = document.querySelector('.js-rhumidity')
     htmlSettings = document.querySelector('.js-settings');
@@ -817,25 +874,30 @@ const init = function () {
     htmlWarning = document.querySelector('.js-warning');
     htmlNotification = document.querySelector('.js-warning-notification');
 
+    // get the current settings
     updatePeriod();
 
-
+    // get the temperature and humidity
     getTemp();
     getHum();
 
+    // if not on homepage -> get data for the graph
     if(!htmlDailyProgress){
         getSummary();
     }
 
-
+    //if on homepage -> get data fro warning
     if(htmlDailyProgress){
         getWarning();
     }
 
+    // get current progress
     getDailyProgress();
 
+    // listen to messages from backend, a click on the settings icon and confirmed settings 
     listenToSocket();
     listenToClickConfirm();
     DisplaySettings();
 }
+// start the script when the HTML document is loaded
 document.addEventListener('DOMContentLoaded', init);
