@@ -280,10 +280,12 @@ def check_progress(msg):
 
 
 def main_code():
+    global amount
+    
     while True:
         led_rood()
         GPIO.wait_for_edge(knop, GPIO.RISING)
-        if progress >= 1.5:
+        if progress >= amount:
             led_blauw()
         else:
             led_wit()

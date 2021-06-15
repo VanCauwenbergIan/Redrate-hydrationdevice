@@ -113,6 +113,7 @@ const showDailyProgress = function(jsonObject){
                 }
             }
         }
+        progress 
         socket.emit("F2B_progress", { Progress: progress});
         let progress_in_procent = (progress / Globalamount * 100).toFixed(2);
 
@@ -139,7 +140,7 @@ const showDailyProgress = function(jsonObject){
         else {
             let liter = ((progress_in_procent / 100) * Globalamount).toFixed(4);
             console.log(`liter: ${liter}`)
-            innerhtml = `${liter * 1000} ml / ${Globalamount*1000} ml`;
+            innerhtml = `${Math.round(liter * 1000)} ml / ${Globalamount*1000} ml`;
             document.querySelector('.js-waterdrunk').innerHTML = innerhtml;
         }
     }
@@ -207,15 +208,17 @@ const listenToSocket = function(){
     })
     socket.on("B2F_new_settings", function (jsonObject){
         if (htmlDailyProgress){
-            document.querySelector('.js-notification-message').innerHTML = `Notification period changed to ${jsonObject.period}min`;
-            htmlNotification.classList.remove("u-display-none")
+            document.querySelector('.js-notification-message').innerHTML = `Notification period changed to ${jsonObject.period}min, Daily amount changed to ${jsonObject.dailyamount}l`;
+            htmlNotification.classList.remove("u-display-none");
             setTimeout (function(){
-                htmlNotification.classList.add("u-display-none")
-                updateMeasurements(Globalprocent, jsonObject.dailyamount)
+                htmlNotification.classList.add("u-display-none");
+                updateMeasurements(Globalprocent, jsonObject.dailyamount);
             }, 5000);
         }
-        document.querySelector('.js-period').value = jsonObject.period
-        document.querySelector('.js-dropdown').value = jsonObject.dailyamount
+        if (jsonObject.period >= 1){
+            document.querySelector('.js-period').value = jsonObject.period;
+        }
+        document.querySelector('.js-dropdown').value = jsonObject.dailyamount;
     })
 }
 
@@ -761,7 +764,9 @@ const updatePeriod = function(){
     socket.emit("F2B_get_settings")
     socket.on("B2F_settings", function (jsonObject){
         console.log(jsonObject)
-        document.querySelector('.js-period').value = jsonObject.period;
+        if (jsonObject.period >= 1){
+            document.querySelector('.js-period').value = jsonObject.period;
+        }
         document.querySelector('.js-dropdown').value = jsonObject.dailyamount;
         getDailyProgress();
     })
